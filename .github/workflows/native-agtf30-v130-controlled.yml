@@ -58,9 +58,38 @@ jobs:
         shell: pwsh
         run: python tools/public_allowlist_check.py
 
+      - name: Verify PowerShell harness syntax under runner pwsh
+        id: pwsh_syntax
+        if: ${{ steps.public_allowlist.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $allow = Get-Content -Raw -LiteralPath PUBLIC_CONTENT_ALLOWLIST.json | ConvertFrom-Json
+          $files = @($allow.allowed_paths | Where-Object { $_ -like '*.ps1' } | Sort-Object)
+          $failures = @()
+          foreach ($rel in $files) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $rel).Path, [ref]$tokens, [ref]$errors)
+            foreach ($error in @($errors)) {
+              $failures += [pscustomobject]@{
+                File = $rel
+                Line = $error.Extent.StartLineNumber
+                Column = $error.Extent.StartColumnNumber
+                Message = $error.Message
+              }
+            }
+          }
+          if ($failures.Count -gt 0) {
+            $failures | Format-Table -AutoSize -Wrap | Out-String | Write-Host
+            throw "POWERSHELL_SYNTAX_FAIL count=$($failures.Count)"
+          }
+          Write-Host "POWERSHELL SYNTAX PASS files=$($files.Count) host=$($PSVersionTable.PSVersion)"
+
       - name: Checkout exact NASA source identities
         id: checkout_sources
-        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' && steps.public_allowlist.outcome == 'success' }}
+        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' && steps.public_allowlist.outcome == 'success' && steps.pwsh_syntax.outcome == 'success' }}
         continue-on-error: true
         shell: pwsh
         run: ./scripts/checkout_sources.ps1
@@ -124,6 +153,7 @@ jobs:
           HARNESS_IDENTITY_OUTCOME: ${{ steps.harness_identity.outcome }}
           RUNNER_IDENTITY_OUTCOME: ${{ steps.runner_identity.outcome }}
           PUBLIC_ALLOWLIST_OUTCOME: ${{ steps.public_allowlist.outcome }}
+          PWSH_SYNTAX_OUTCOME: ${{ steps.pwsh_syntax.outcome }}
           SOURCE_CHECKOUT_OUTCOME: ${{ steps.checkout_sources.outcome }}
           DEPENDENCY_PREFLIGHT_OUTCOME: ${{ steps.dependency_preflight.outcome }}
           SOURCE_CLEAN_PRE_OUTCOME: ${{ steps.source_clean_pre.outcome }}

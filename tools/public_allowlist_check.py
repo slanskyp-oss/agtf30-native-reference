@@ -47,6 +47,13 @@ timeout=json.loads((root/'config/timeout_policy.json').read_text(encoding='utf-8
 whole=timeout['whole_controlled_job_timeout_minutes']; native=timeout['native_matlab_action_step_timeout_minutes']; margin=timeout['reserved_post_native_margin_minutes']
 if not (native < whole and margin == whole-native and margin>0): print('TIMEOUT POLICY FAIL',timeout); sys.exit(5)
 controlled=(root/'.github/workflows/native-agtf30-v130-controlled.yml').read_text(encoding='utf-8')
+smoke=(root/'.github/workflows/native-agtf30-smoke.yml').read_text(encoding='utf-8')
+syntax_marker='POWERSHELL SYNTAX PASS'
+parse_call='System.Management.Automation.Language.Parser]::ParseFile'
+if syntax_marker not in smoke or parse_call not in smoke or 'shell: pwsh' not in smoke: print('PWSH SYNTAX SMOKE GATE FAIL'); sys.exit(6)
+if 'id: pwsh_syntax' not in controlled or syntax_marker not in controlled or parse_call not in controlled or 'PWSH_SYNTAX_OUTCOME:' not in controlled: print('PWSH SYNTAX CONTROLLED GATE FAIL'); sys.exit(6)
+checkout_source_block=controlled[controlled.index('id: checkout_sources'):controlled.index('Assess exact source dependencies and Cantera requirement')]
+if "steps.pwsh_syntax.outcome == 'success'" not in checkout_source_block: print('PWSH SYNTAX SOURCE-BLOCKING FAIL'); sys.exit(6)
 if 'expected_harness_sha:' not in controlled or 'EXPECTED_HARNESS_SHA: ${{ inputs.expected_harness_sha }}' not in controlled: print('HARNESS SHA GATE FAIL missing dispatch binding'); sys.exit(6)
 if 'workflow_dispatch:' not in controlled or re.search(r'\n\s+push:', controlled) or re.search(r'\n\s+pull_request:', controlled): print('CONTROLLED TRIGGER FAIL'); sys.exit(6)
 if f'timeout-minutes: {whole}' not in controlled: print('WHOLE JOB TIMEOUT BINDING FAIL'); sys.exit(6)
@@ -57,7 +64,11 @@ if "command: addpath('scripts'); nref_native_bootstrap" not in native_block or '
 all_public_text='\n'.join(p.read_text(encoding='utf-8',errors='ignore') for p in root.rglob('*') if p.is_file())
 if re.search(r'Start-Process\s+.*matlab|Start-Process\s+-FilePath\s+\$matlab',all_public_text,re.I): print('DIRECT MATLAB LAUNCH FAIL'); sys.exit(6)
 if (root/'scripts/run_native_with_timeout.ps1').exists(): print('DIRECT MATLAB WATCHDOG RETIREMENT FAIL'); sys.exit(6)
-if 'MATLAB_ACTION_EXECUTION_FAIL' not in (root/'scripts/finalize_controlled_status.ps1').read_text(encoding='utf-8'): print('MATLAB ACTION FAILURE CLASSIFICATION FAIL'); sys.exit(6)
+finalizer=(root/'scripts/finalize_controlled_status.ps1').read_text(encoding='utf-8')
+if 'MATLAB_ACTION_EXECUTION_FAIL' not in finalizer: print('MATLAB ACTION FAILURE CLASSIFICATION FAIL'); sys.exit(6)
+if 'PWSH_SYNTAX_OUTCOME' not in finalizer or 'source_dependency_assessment.json' not in finalizer or 'CANTERA_REQUIRED' not in finalizer: print('PREFLIGHT FAILURE CLASSIFICATION FAIL'); sys.exit(6)
+status_codes=json.loads((root/'config/status_codes.json').read_text(encoding='utf-8'))
+if 'source_dependency_failure_rule' not in status_codes: print('SOURCE DEPENDENCY STATUS SEMANTICS FAIL'); sys.exit(6)
 gate=(root/'scripts/capture_harness_identity.ps1').read_text(encoding='utf-8')
 if '^[0-9a-fA-F]{40}$' not in gate or 'UNREVIEWED_HARNESS_SHA_FAIL' not in gate: print('HARNESS SHA IMPLEMENTATION FAIL'); sys.exit(6)
 

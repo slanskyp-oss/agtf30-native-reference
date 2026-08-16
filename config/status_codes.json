@@ -1,5 +1,5 @@
 {
-  "schema": "NREF_POINT_AND_RUN_STATUS_CODES_v1.2.1",
+  "schema": "NREF_POINT_AND_RUN_STATUS_CODES_v1.2.2",
   "point_statuses": [
     "PASS_NATIVE_CONVERGED",
     "NOT_EXECUTED_BY_GRID_POLICY",
@@ -30,6 +30,7 @@
     "EVIDENCE_PACKAGING_FAIL",
     "OTHER_TOOLING_FAIL"
   ],
+  "source_dependency_failure_rule": "SOURCE_DEPENDENCY_FAIL is permitted only when readable machine-readable source dependency assessment evidence positively establishes CANTERA_REQUIRED=true. Parser, tooling, or undifferentiated dependency-preflight process failure is OTHER_TOOLING_FAIL.",
   "source_nonconvergence_rule": "SOURCE_NONCONVERGED is permitted only for a point that actually executed native AGTF30/T-MATS, produced native out_SS, and has explicit out_SS.converged evidence indicating nonconvergence.",
   "matlab_action_failure_rule": "Licensing, MATLAB startup, action runtime, and undifferentiated step failure are tooling/action failures. If available metadata does not prove timeout or a more specific source/build class, use MATLAB_ACTION_EXECUTION_FAIL.",
   "timeout_rule": "NATIVE_STEP_TIMEOUT_TOOLING_FAIL is permitted only when GitHub/action metadata explicitly establishes a timeout. A generic failed run-command outcome is not sufficient to fabricate timeout certainty.",

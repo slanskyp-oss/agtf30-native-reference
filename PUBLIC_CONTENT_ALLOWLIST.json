@@ -1,5 +1,5 @@
 {
-  "schema": "NREF_PUBLIC_CONTENT_ALLOWLIST_v1.2.2",
+  "schema": "NREF_PUBLIC_CONTENT_ALLOWLIST_v1.2.3",
   "repository_identity_recommendation": "agtf30-native-reference",
   "policy": "Only listed generic public-source tooling paths are permitted. Unexpected files fail preflight.",
   "allowed_paths": [

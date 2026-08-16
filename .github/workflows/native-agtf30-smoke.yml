@@ -16,6 +16,31 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
         with:
           persist-credentials: false
+      - name: Verify PowerShell harness syntax under runner pwsh
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $allow = Get-Content -Raw -LiteralPath PUBLIC_CONTENT_ALLOWLIST.json | ConvertFrom-Json
+          $files = @($allow.allowed_paths | Where-Object { $_ -like '*.ps1' } | Sort-Object)
+          $failures = @()
+          foreach ($rel in $files) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path -LiteralPath $rel).Path, [ref]$tokens, [ref]$errors)
+            foreach ($error in @($errors)) {
+              $failures += [pscustomobject]@{
+                File = $rel
+                Line = $error.Extent.StartLineNumber
+                Column = $error.Extent.StartColumnNumber
+                Message = $error.Message
+              }
+            }
+          }
+          if ($failures.Count -gt 0) {
+            $failures | Format-Table -AutoSize -Wrap | Out-String | Write-Host
+            throw "POWERSHELL_SYNTAX_FAIL count=$($failures.Count)"
+          }
+          Write-Host "POWERSHELL SYNTAX PASS files=$($files.Count) host=$($PSVersionTable.PSVersion)"
       - name: Verify public allowlist and generic grid
         shell: pwsh
         run: python tools/public_allowlist_check.py

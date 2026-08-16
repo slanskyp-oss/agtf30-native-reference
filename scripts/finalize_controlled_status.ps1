@@ -13,8 +13,24 @@ if ($env:HARNESS_IDENTITY_OUTCOME -ne 'success') {
 }
 elseif ($env:PUBLIC_ALLOWLIST_OUTCOME -ne 'success') { $status='OTHER_TOOLING_FAIL'; $detail='Public allowlist/reference-grid preflight failed.' }
 elseif ($env:RUNNER_IDENTITY_OUTCOME -ne 'success') { $status='RUNNER_IDENTITY_FAIL'; $detail='Runner/tooling/Python provenance capture failed.' }
+elseif ($env:PWSH_SYNTAX_OUTCOME -ne 'success') { $status='OTHER_TOOLING_FAIL'; $detail='Harness PowerShell syntax preflight failed under runner pwsh; source acquisition was not started.' }
 elseif ($env:SOURCE_CHECKOUT_OUTCOME -ne 'success') { $status='SOURCE_CHECKOUT_FAIL'; $detail='Exact NASA source checkout/identity/archive failed.' }
-elseif ($env:DEPENDENCY_PREFLIGHT_OUTCOME -ne 'success') { $status='SOURCE_DEPENDENCY_FAIL'; $detail='Dependency/Cantera preflight failed.' }
+elseif ($env:DEPENDENCY_PREFLIGHT_OUTCOME -ne 'success') {
+  $depFile=Join-Path $root 'evidence/source/source_dependency_assessment.json'
+  $dep=$null
+  if (Test-Path $depFile) {
+    try { $dep=Get-Content -Raw $depFile | ConvertFrom-Json }
+    catch { $dep=$null }
+  }
+  if ($null -ne $dep -and $dep.CANTERA_REQUIRED -eq $true) {
+    $status='SOURCE_DEPENDENCY_FAIL'
+    $detail='Machine-readable dependency assessment positively establishes CANTERA_REQUIRED=true; controlled dependency is not provisioned.'
+  }
+  else {
+    $status='OTHER_TOOLING_FAIL'
+    $detail='Dependency preflight process failed without positive machine-readable evidence of a required source dependency; do not classify as SOURCE_DEPENDENCY_FAIL.'
+  }
+}
 elseif ($env:SOURCE_CLEAN_PRE_OUTCOME -ne 'success') { $status='SOURCE_DIRTY_FAIL'; $detail='Pre-build tracked source cleanliness failed.' }
 elseif ($env:MATLAB_SETUP_OUTCOME -ne 'success') { $status='MATLAB_SETUP_FAIL'; $detail='MATLAB/Simulink setup action failed.' }
 elseif ($env:MATLAB_ACTION_PREFLIGHT_OUTCOME -ne 'success') { $status='MATLAB_ACTION_PREFLIGHT_FAIL'; $detail='Pinned MATLAB run-command preflight failed; native source acquisition was not started.' }
@@ -47,7 +63,7 @@ else {
 }
 
 [ordered]@{
- schema='NREF_CONTROLLED_P1_RUN_STATUS_v1.2.1'
+ schema='NREF_CONTROLLED_P1_RUN_STATUS_v1.2.2'
  RUN_REASON=$env:RUN_REASON
  classification=$env:P1_CLASSIFICATION
  status=$status
@@ -64,11 +80,14 @@ else {
  utc=(Get-Date).ToUniversalTime().ToString('o')
  step_outcomes=[ordered]@{
   harness_identity=$env:HARNESS_IDENTITY_OUTCOME; public_allowlist=$env:PUBLIC_ALLOWLIST_OUTCOME; runner_identity=$env:RUNNER_IDENTITY_OUTCOME;
+  pwsh_syntax=$env:PWSH_SYNTAX_OUTCOME;
   source_checkout=$env:SOURCE_CHECKOUT_OUTCOME; dependency_preflight=$env:DEPENDENCY_PREFLIGHT_OUTCOME; source_clean_pre=$env:SOURCE_CLEAN_PRE_OUTCOME;
   matlab_setup=$env:MATLAB_SETUP_OUTCOME; matlab_action_preflight=$env:MATLAB_ACTION_PREFLIGHT_OUTCOME; native_run=$env:NATIVE_RUN_OUTCOME;
   source_clean_post=$env:SOURCE_CLEAN_POST_OUTCOME
  }
  status_semantics=[ordered]@{
+  pwsh_syntax_failure='Harness parser failure under runner pwsh is OTHER_TOOLING_FAIL and blocks source acquisition before MATLAB/native execution.'
+  source_dependency_fail_requires='SOURCE_DEPENDENCY_FAIL requires readable positive machine-readable dependency evidence with CANTERA_REQUIRED=true; an undifferentiated preflight process failure is tooling failure.'
   source_nonconverged_requires='Native source execution plus explicit native convergence quantity indicating nonconvergence.'
   matlab_action_execution_fail='Used when the pinned MATLAB action fails without evidence sufficient for a more specific source/build classification.'
   timeout_classification='NATIVE_STEP_TIMEOUT_TOOLING_FAIL may be assigned only when workflow/run metadata explicitly establishes timeout; this finalizer does not infer timeout from a generic failed action outcome.'
