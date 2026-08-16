@@ -1,0 +1,9 @@
+{
+  "schema": "NREF_TIMEOUT_POLICY_v1.2.1",
+  "whole_controlled_job_timeout_minutes": 240,
+  "native_matlab_action_step_timeout_minutes": 180,
+  "reserved_post_native_margin_minutes": 60,
+  "authoritative_timeout_mechanism": "GitHub Actions step-level timeout-minutes on the pinned matlab-actions/run-command native acquisition step.",
+  "policy": "Authoritative native MATLAB execution is performed by the pinned MathWorks Run MATLAB Command action. Its GitHub step timeout is 180 minutes; whole controlled job timeout is 240 minutes, leaving 60 minutes nominal margin for source cleanliness, status finalization, hashing, artifact upload and transport record.",
+  "timeout_classification": "If GitHub/action metadata explicitly proves native step timeout, classify NATIVE_STEP_TIMEOUT_TOOLING_FAIL. If only a generic failed action outcome is available, classify MATLAB_ACTION_EXECUTION_FAIL; do not infer source nonconvergence or fabricate timeout certainty."
+}

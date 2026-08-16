@@ -1,0 +1,9 @@
+{
+  "schema": "NREF_REQUESTED_VS_SOURCE_ACTUAL_TOLERANCES_v1.0",
+  "predeclared_before_execution": true,
+  "altitude_ft_abs": 1e-06,
+  "mach_abs": 1e-09,
+  "dT_degF_abs": 1e-06,
+  "PLA_abs": 1e-06,
+  "rule": "If any source-actual initial-condition/control value differs from requested by more than tolerance, point status is SOURCE_CLAMPED_INPUT_REJECTED and altered point is not accepted as requested P1 reference."
+}

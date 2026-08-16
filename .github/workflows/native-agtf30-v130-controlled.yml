@@ -1,0 +1,185 @@
+name: Controlled P1 AGTF30 T-MATS v1.3.0 acquisition
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorization:
+        description: 'Manual authorization token'
+        required: true
+        type: choice
+        options:
+          - AUTHORIZE_CONTROLLED_P1
+      expected_harness_sha:
+        description: 'Reviewed 40-hex Git commit SHA for this exact public harness'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RUN_REASON: CONTROLLED_P1_SOURCE_ACQUISITION
+  P1_CLASSIFICATION: P1-COMPAT CANDIDATE - NATIVE SOURCE / MODERN TOOLCHAIN COMPATIBILITY RUN
+  EXPECTED_HARNESS_SHA: ${{ inputs.expected_harness_sha }}
+
+jobs:
+  controlled-p1-source-reference:
+    if: ${{ inputs.authorization == 'AUTHORIZE_CONTROLLED_P1' }}
+    runs-on: windows-2022
+    timeout-minutes: 240
+    steps:
+      - name: Checkout reviewed execution harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Initialize evidence directories
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force evidence, evidence/harness, evidence/source, evidence/environment, evidence/raw, evidence/parsed, evidence/logs, evidence/status, transport | Out-Null
+
+      - name: Enforce reviewed harness SHA binding
+        id: harness_identity
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/capture_harness_identity.ps1
+
+      - name: Capture actual runner image, toolset and Python identity
+        id: runner_identity
+        if: ${{ steps.harness_identity.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/capture_runner_identity.ps1
+
+      - name: Verify public allowlist and generic grid
+        id: public_allowlist
+        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: python tools/public_allowlist_check.py
+
+      - name: Checkout exact NASA source identities
+        id: checkout_sources
+        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' && steps.public_allowlist.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/checkout_sources.ps1
+
+      - name: Assess exact source dependencies and Cantera requirement
+        id: dependency_preflight
+        if: ${{ steps.checkout_sources.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/source_dependency_preflight.ps1
+
+      - name: Verify tracked NASA source cleanliness before build
+        id: source_clean_pre
+        if: ${{ steps.checkout_sources.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/source_cleanliness.ps1 -Phase PRE_BUILD
+
+      - name: Set up MATLAB R2023b and Simulink
+        id: setup_matlab
+        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' && steps.public_allowlist.outcome == 'success' && steps.checkout_sources.outcome == 'success' && steps.dependency_preflight.outcome == 'success' && steps.source_clean_pre.outcome == 'success' }}
+        continue-on-error: true
+        uses: matlab-actions/setup-matlab@2323adb8243827ea460b0def4c413545aaec46a9 # v3.0.2, node24
+        with:
+          release: R2023b
+          products: Simulink
+
+      - name: Verify pinned MATLAB run-command action and release identity
+        id: matlab_action_preflight
+        if: ${{ steps.setup_matlab.outcome == 'success' }}
+        continue-on-error: true
+        timeout-minutes: 10
+        uses: matlab-actions/run-command@75644028e1e2aa374bbfdc968a65718a178cc264 # v3.2.1, node24
+        with:
+          command: assert(strcmp(version('-release'),'2023b')); fprintf('MATLAB action preflight release=%s\n',version('-release'))
+          generate-summary: false
+
+      - name: Execute native T-MATS build and complete AGTF30 reference grid through licensed MATLAB action
+        id: native_run
+        if: ${{ steps.matlab_action_preflight.outcome == 'success' }}
+        continue-on-error: true
+        timeout-minutes: 180
+        uses: matlab-actions/run-command@75644028e1e2aa374bbfdc968a65718a178cc264 # v3.2.1, node24
+        with:
+          command: addpath('scripts'); nref_native_bootstrap
+          generate-summary: false
+
+      - name: Verify tracked NASA source cleanliness after run
+        id: source_clean_post
+        if: ${{ always() && steps.checkout_sources.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/source_cleanliness.ps1 -Phase POST_RUN
+
+      - name: Finalize machine-readable run classification
+        id: finalize_status
+        if: always()
+        continue-on-error: true
+        shell: pwsh
+        env:
+          HARNESS_IDENTITY_OUTCOME: ${{ steps.harness_identity.outcome }}
+          RUNNER_IDENTITY_OUTCOME: ${{ steps.runner_identity.outcome }}
+          PUBLIC_ALLOWLIST_OUTCOME: ${{ steps.public_allowlist.outcome }}
+          SOURCE_CHECKOUT_OUTCOME: ${{ steps.checkout_sources.outcome }}
+          DEPENDENCY_PREFLIGHT_OUTCOME: ${{ steps.dependency_preflight.outcome }}
+          SOURCE_CLEAN_PRE_OUTCOME: ${{ steps.source_clean_pre.outcome }}
+          MATLAB_SETUP_OUTCOME: ${{ steps.setup_matlab.outcome }}
+          MATLAB_ACTION_PREFLIGHT_OUTCOME: ${{ steps.matlab_action_preflight.outcome }}
+          NATIVE_RUN_OUTCOME: ${{ steps.native_run.outcome }}
+          SOURCE_CLEAN_POST_OUTCOME: ${{ steps.source_clean_post.outcome }}
+        run: ./scripts/finalize_controlled_status.ps1
+
+      - name: Capture post-run evidence and SHA256 manifest
+        id: package_evidence
+        if: always()
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/capture_post_run_evidence.ps1
+
+      - name: Upload controlled native evidence artifact
+        id: upload_evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1, node24
+        with:
+          name: AGTF30_NATIVE_V130_CONTROLLED_P1_EVIDENCE
+          path: evidence
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Record CI transport digest and run binding
+        id: record_transport
+        if: ${{ always() && steps.upload_evidence.outcome == 'success' }}
+        continue-on-error: true
+        shell: pwsh
+        env:
+          PRIMARY_ARTIFACT_DIGEST: ${{ steps.upload_evidence.outputs.artifact-digest }}
+          PRIMARY_ARTIFACT_ID: ${{ steps.upload_evidence.outputs.artifact-id }}
+          PRIMARY_ARTIFACT_URL: ${{ steps.upload_evidence.outputs.artifact-url }}
+        run: ./scripts/record_transport_digest.ps1
+
+      - name: Upload transport record
+        id: upload_transport
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1, node24
+        with:
+          name: AGTF30_NATIVE_V130_CONTROLLED_P1_TRANSPORT_RECORD
+          path: transport
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce aggregate controlled qualification result
+        if: always()
+        shell: pwsh
+        env:
+          FINALIZE_STATUS_OUTCOME: ${{ steps.finalize_status.outcome }}
+          PACKAGE_EVIDENCE_OUTCOME: ${{ steps.package_evidence.outcome }}
+          UPLOAD_EVIDENCE_OUTCOME: ${{ steps.upload_evidence.outcome }}
+          RECORD_TRANSPORT_OUTCOME: ${{ steps.record_transport.outcome }}
+          UPLOAD_TRANSPORT_OUTCOME: ${{ steps.upload_transport.outcome }}
+        run: ./scripts/enforce_controlled_gate.ps1

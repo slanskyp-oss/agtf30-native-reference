@@ -1,0 +1,19 @@
+Point_ID,Group,Description,Altitude_m,Altitude_ft,Mach,dT_degF,PLA,Execution_Action,Rationale
+SRC-TO-01,TAKEOFF,Sea level / M0.00 / ISA / high power,0,0.0,0.0,0.0,80.0,EXECUTE,Generic source reference
+SRC-TO-02,TAKEOFF,Sea level / M0.20 / ISA / high power,0,0.0,0.2,0.0,80.0,EXECUTE,Generic source reference
+SRC-TO-03,TAKEOFF,5000 ft / M0.20 / ISA / high power,1524,5000.0,0.2,0.0,80.0,EXECUTE,Generic source reference
+SRC-CL-01,CLIMB,5000 ft / M0.30 / ISA / high power,1524,5000.0,0.3,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-02,CLIMB,10000 ft / M0.40 / ISA / high power,3048,10000.0,0.4,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-03,CLIMB,15000 ft / M0.50 / ISA / high power,4572,15000.0,0.5,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-04,CLIMB,20000 ft / M0.55 / ISA / high power,6096,20000.0,0.55,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-05,CLIMB,25000 ft / M0.60 / ISA / high power,7620,25000.0,0.6,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-06,CLIMB,30000 ft / M0.65 / ISA / high power,9144,30000.0,0.65,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CL-07,CLIMB,35000 ft / M0.70 / ISA / high power,10668,35000.0,0.7,0.0,80.0,EXECUTE,Interior native-envelope point
+SRC-CR-01,CRUISE,25000 ft / M0.70 / ISA / part power,7620,25000.0,0.7,0.0,60.0,EXECUTE,Generic source part-power reference
+SRC-CR-02,CRUISE,30000 ft / M0.75 / ISA / part power,9144,30000.0,0.75,0.0,60.0,EXECUTE,Generic source part-power reference
+SRC-CR-03,CRUISE,35000 ft / M0.78 / ISA / part power,10668,35000.0,0.78,0.0,60.0,EXECUTE,Generic source part-power reference
+SRC-CR-04,CRUISE,38000 ft / M0.80 / ISA / part power,11582.4,38000.0,0.8,0.0,60.0,EXECUTE,Generic source part-power reference
+SRC-PP-01,PART_POWER,Sea level / M0.00 / ISA / lower power,0,0.0,0.0,0.0,50.0,EXECUTE,Generic source lower-power state
+SRC-PP-02,PART_POWER,10000 ft / M0.30 / ISA / lower power,3048,10000.0,0.3,0.0,50.0,EXECUTE,Generic source lower-power state
+SRC-PP-03,PART_POWER,20000 ft / M0.50 / ISA / lower power,6096,20000.0,0.5,0.0,55.0,EXECUTE,Generic source lower-power state
+SRC-PP-04,PART_POWER,30000 ft / M0.70 / ISA / lower power,9144,30000.0,0.7,0.0,50.0,EXECUTE,Generic source lower-power state

@@ -1,0 +1,37 @@
+{
+  "schema": "NREF_POINT_AND_RUN_STATUS_CODES_v1.2.1",
+  "point_statuses": [
+    "PASS_NATIVE_CONVERGED",
+    "NOT_EXECUTED_BY_GRID_POLICY",
+    "SOURCE_CLAMPED_INPUT_REJECTED",
+    "SOURCE_EXECUTION_ERROR",
+    "SOURCE_NONCONVERGED",
+    "PARSER_FAIL",
+    "EVIDENCE_PACKAGING_FAIL"
+  ],
+  "run_statuses": [
+    "P1_COMPAT_NATIVE_SOURCE_CANDIDATE_PASS_SCHEMA_DISCOVERY",
+    "UNREVIEWED_HARNESS_SHA_FAIL",
+    "HARNESS_IDENTITY_FAIL",
+    "RUNNER_IDENTITY_FAIL",
+    "SOURCE_CHECKOUT_FAIL",
+    "SOURCE_DEPENDENCY_FAIL",
+    "SOURCE_DIRTY_FAIL",
+    "MATLAB_SETUP_FAIL",
+    "MATLAB_ACTION_PREFLIGHT_FAIL",
+    "MATLAB_ACTION_EXECUTION_FAIL",
+    "COMPILER_SELECTION_FAIL",
+    "BUILD_FAIL",
+    "NATIVE_STEP_TIMEOUT_TOOLING_FAIL",
+    "SOURCE_EXECUTION_ERROR",
+    "SOURCE_NONCONVERGED",
+    "SOURCE_CLAMPED_INPUT_REJECTED",
+    "PARSER_FAIL",
+    "EVIDENCE_PACKAGING_FAIL",
+    "OTHER_TOOLING_FAIL"
+  ],
+  "source_nonconvergence_rule": "SOURCE_NONCONVERGED is permitted only for a point that actually executed native AGTF30/T-MATS, produced native out_SS, and has explicit out_SS.converged evidence indicating nonconvergence.",
+  "matlab_action_failure_rule": "Licensing, MATLAB startup, action runtime, and undifferentiated step failure are tooling/action failures. If available metadata does not prove timeout or a more specific source/build class, use MATLAB_ACTION_EXECUTION_FAIL.",
+  "timeout_rule": "NATIVE_STEP_TIMEOUT_TOOLING_FAIL is permitted only when GitHub/action metadata explicitly establishes a timeout. A generic failed run-command outcome is not sufficient to fabricate timeout certainty.",
+  "note": "A P1-COMPAT candidate pass is not final P1 semantic-deck acceptance. First controlled run remains schema discovery plus native execution qualification."
+}

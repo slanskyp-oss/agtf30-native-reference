@@ -1,0 +1,5 @@
+# Runtime products only. NASA source repos are cloned here during CI and remain external evidence inputs.
+external/
+evidence/
+transport/
+*.mexw64

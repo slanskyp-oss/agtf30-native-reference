@@ -1,0 +1,35 @@
+name: AGTF30 CI development smoke
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  static-smoke:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          persist-credentials: false
+      - name: Verify public allowlist and generic grid
+        shell: pwsh
+        run: python tools/public_allowlist_check.py
+      - name: Create non-controlled smoke record
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force smoke | Out-Null
+          $pyVersion = (& python --version 2>&1 | Out-String).Trim()
+          $pyExe = (& python -c "import sys; print(sys.executable)" | Out-String).Trim()
+          @{ artifact_class='NON-CONTROLLED DEVELOPMENT ARTIFACT'; harness_sha=$env:GITHUB_SHA; python_version=$pyVersion; python_executable=$pyExe; utc=(Get-Date).ToUniversalTime().ToString('o') } | ConvertTo-Json | Set-Content -Encoding utf8 smoke/smoke_record.json
+      - name: Upload non-controlled smoke artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1, node24
+        with:
+          name: AGTF30_NON_CONTROLLED_DEVELOPMENT_SMOKE
+          path: smoke
+          if-no-files-found: error
+          retention-days: 7

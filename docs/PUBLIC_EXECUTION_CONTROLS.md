@@ -1,0 +1,24 @@
+# Public execution controls
+
+- Exact NASA source checkouts are detached commits and HEAD is verified.
+- Executing harness identity is the reviewed full Git commit SHA.
+- Controlled acquisition is manual `workflow_dispatch` only.
+- Controlled dispatch requires `expected_harness_sha`; malformed or mismatched SHA fails as `UNREVIEWED_HARNESS_SHA_FAIL` before NASA source checkout.
+- Development smoke output is non-controlled.
+- GitHub Actions are pinned to full commit SHAs; registered action runtimes are Node 24.
+- Runner image/version/toolsets and Python version/executable are captured.
+- MATLAB R2023b compiler selection is deterministic and fails on ambiguity/unavailability.
+- Dependency/Cantera preflight runs before build.
+- Tracked source cleanliness is required before and after execution.
+- The authoritative native acquisition itself runs through pinned `matlab-actions/run-command`, preserving the public-project automatic-licensing execution path.
+- The native run-command step has GitHub `timeout-minutes: 180`; the whole controlled job has `timeout-minutes: 240`, leaving 60 minutes nominal post-native margin.
+- Generic MATLAB action/licensing/startup failure is `MATLAB_ACTION_EXECUTION_FAIL` unless evidence supports a more specific class.
+- `NATIVE_STEP_TIMEOUT_TOOLING_FAIL` is used only when explicit run metadata establishes timeout; timeout is never inferred from generic failure.
+- `SOURCE_NONCONVERGED` requires executed native source output with an explicit native convergence quantity indicating nonconvergence.
+- Each generic reference point is independently executed; one failure does not suppress evidence from later points.
+- Source-actual flight/control inputs are compared against requested values before acceptance.
+- Raw native MAT output remains authoritative; parsed inventories are derivative schema-discovery evidence.
+- MATLAB diary is preserved. The harness does not generate artificial redirected MATLAB stdout/stderr files.
+- Post-native source cleanliness, status finalization, hashing, artifact upload and transport recording remain after the run-command step and use `always()` where required.
+- Missing evidence files are an upload error.
+- T-MATS v1.3.3 compatibility remains disabled pending separate review.

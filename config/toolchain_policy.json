@@ -1,0 +1,17 @@
+{
+  "schema": "NREF_P1_COMPAT_TOOLCHAIN_POLICY_v1.0",
+  "classification": "P1-COMPAT CANDIDATE \u2014 NATIVE SOURCE / MODERN TOOLCHAIN COMPATIBILITY RUN",
+  "matlab_release": "R2023b",
+  "simulink_required": true,
+  "runner_family": "windows-2022",
+  "expected_c_mex_compiler": {
+    "manufacturer": "Microsoft",
+    "name_regex": "Microsoft Visual C\\+\\+ 2022.*\\(C\\)|Microsoft Visual C\\+\\+ 2022",
+    "family": "Microsoft Visual C++ 2022 / Visual Studio 2022 Build Tools",
+    "selection_method": "Enumerate mex.getCompilerConfigurations('C','Installed'); require exactly one configuration whose Language is C; require that sole C configuration to match Microsoft Visual C++ 2022; execute documented 'mex -setup C'; verify selected Name/Manufacturer/Language/Version/Location/MexOpt exactly match the candidate. Fail on ambiguity or mismatch.",
+    "fail_if_unavailable": true,
+    "ambiguity_policy": "FAIL_IF_MORE_THAN_ONE_INSTALLED_SUPPORTED_C_CONFIGURATION"
+  },
+  "historical_runtime_reproduction": false,
+  "forbidden": "Do not emulate Microsoft SDK 7.1 and do not modify NASA source to satisfy modern compiler compatibility."
+}

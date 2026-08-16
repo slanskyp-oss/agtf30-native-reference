@@ -1,0 +1,74 @@
+{
+  "schema": "NREF_ACTION_DEPENDENCY_REGISTER_v1.2.1",
+  "acquisition_utc": "2026-08-16T08:07:23Z",
+  "policy": "All invoked GitHub Actions are pinned to full immutable commit SHAs. Human-readable release tags are metadata only. The authoritative MATLAB native run uses the pinned Run MATLAB Command action.",
+  "dependencies": [
+    {
+      "repository": "actions/checkout",
+      "commit_sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "release_tag": "v7.0.1",
+      "runtime": "node24",
+      "tag_kind": "lightweight",
+      "release_published_utc": "2026-07-20T15:10:05Z",
+      "acquisition_source": "GitHub REST genuine action repository",
+      "acquisition_utc": "2026-08-16T08:07:23Z",
+      "release_api": "https://api.github.com/repos/actions/checkout/releases/tags/v7.0.1",
+      "tag_ref_api": "https://api.github.com/repos/actions/checkout/git/ref/tags/v7.0.1",
+      "action_manifest": "https://github.com/actions/checkout/blob/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml",
+      "reverified_for_v1_2_1": true
+    },
+    {
+      "repository": "matlab-actions/setup-matlab",
+      "commit_sha": "2323adb8243827ea460b0def4c413545aaec46a9",
+      "release_tag": "v3.0.2",
+      "runtime": "node24",
+      "tag_kind": "annotated; dereferenced to commit",
+      "release_published_utc": "2026-07-31T18:47:19Z",
+      "acquisition_source": "GitHub REST genuine action repository",
+      "acquisition_utc": "2026-08-16T08:07:23Z",
+      "release_api": "https://api.github.com/repos/matlab-actions/setup-matlab/releases/tags/v3.0.2",
+      "tag_ref_api": "https://api.github.com/repos/matlab-actions/setup-matlab/git/ref/tags/v3.0.2",
+      "action_manifest": "https://github.com/matlab-actions/setup-matlab/blob/2323adb8243827ea460b0def4c413545aaec46a9/action.yml",
+      "reverified_for_v1_2_1": true
+    },
+    {
+      "repository": "matlab-actions/run-command",
+      "commit_sha": "75644028e1e2aa374bbfdc968a65718a178cc264",
+      "release_tag": "v3.2.1",
+      "runtime": "node24",
+      "tag_kind": "annotated; dereferenced to commit",
+      "release_published_utc": "2026-07-31T18:53:11Z",
+      "acquisition_source": "GitHub REST genuine action repository",
+      "acquisition_utc": "2026-08-16T08:07:23Z",
+      "release_api": "https://api.github.com/repos/matlab-actions/run-command/releases/tags/v3.2.1",
+      "tag_ref_api": "https://api.github.com/repos/matlab-actions/run-command/git/ref/tags/v3.2.1",
+      "action_manifest": "https://github.com/matlab-actions/run-command/blob/75644028e1e2aa374bbfdc968a65718a178cc264/action.yml",
+      "reverified_for_v1_2_1": true,
+      "verified_input_schema": [
+        "command",
+        "startup-options",
+        "generate-summary"
+      ],
+      "controlled_native_used_inputs": [
+        "command",
+        "generate-summary"
+      ],
+      "action_manifest_blob_sha": "114ee0bb34707b757cc9f52445b96cc5bb5f034e"
+    },
+    {
+      "repository": "actions/upload-artifact",
+      "commit_sha": "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+      "release_tag": "v7.0.1",
+      "runtime": "node24",
+      "tag_kind": "lightweight",
+      "release_published_utc": "2026-04-10T17:31:14Z",
+      "acquisition_source": "GitHub REST genuine action repository",
+      "acquisition_utc": "2026-08-16T08:07:23Z",
+      "release_api": "https://api.github.com/repos/actions/upload-artifact/releases/tags/v7.0.1",
+      "tag_ref_api": "https://api.github.com/repos/actions/upload-artifact/git/ref/tags/v7.0.1",
+      "action_manifest": "https://github.com/actions/upload-artifact/blob/043fb46d1a93c77aae656e7c1c64a875d1fc6a0a/action.yml",
+      "reverified_for_v1_2_1": true
+    }
+  ],
+  "repository_role": "generic_public_native_source_reference_tool"
+}

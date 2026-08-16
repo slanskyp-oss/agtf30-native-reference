@@ -1,0 +1,8 @@
+# DISABLED — requires separate compatibility review before enabling.
+# Separate source identity: T-MATS v1.3.3 commit 6339c85e735011b6cc6b65e9f46ac2ad531c7e85
+name: AGTF30 T-MATS v1.3.3 compatibility diagnostic
+
+on: {}
+
+# This file is intentionally disabled and is not an executable workflow.
+# If activated after review, it must remain a separately identified compatibility run and must not replace v1.3.0 evidence silently.
