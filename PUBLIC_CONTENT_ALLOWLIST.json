@@ -1,11 +1,12 @@
 {
-  "schema": "NREF_PUBLIC_CONTENT_ALLOWLIST_v1.2.1",
+  "schema": "NREF_PUBLIC_CONTENT_ALLOWLIST_v1.2.2",
   "repository_identity_recommendation": "agtf30-native-reference",
   "policy": "Only listed generic public-source tooling paths are permitted. Unexpected files fail preflight.",
   "allowed_paths": [
     ".github/workflows/native-agtf30-smoke.yml",
     ".github/workflows/native-agtf30-v130-controlled.yml",
     ".github/workflows/native-agtf30-v133-compatibility.yml.disabled",
+    ".gitattributes",
     ".gitignore",
     "PUBLIC_CONTENT_ALLOWLIST.json",
     "PUBLIC_REPOSITORY_POLICY.md",

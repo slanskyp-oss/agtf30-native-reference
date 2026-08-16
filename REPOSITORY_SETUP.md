@@ -6,7 +6,7 @@ Recommended description: `Generic NASA AGTF30/T-MATS native source-reference CI 
 
 Required visibility for the intended licensing path: **public**.
 
-The first public commit should contain only this reviewed allowlisted tree. Record its full 40-hex Git commit SHA. The controlled acquisition workflow must then be launched manually with `workflow_dispatch`, `AUTHORIZE_CONTROLLED_P1`, and the exact same reviewed SHA as `expected_harness_sha`.
+The initial public root commit is an immutable audit record and must not be rewritten. Any remediation must be added as a normal descendant commit. The controlled acquisition workflow may be launched only from the exact public harness commit that has completed the required review and non-controlled smoke successfully. Record that full 40-hex Git commit SHA and launch `workflow_dispatch` with `AUTHORIZE_CONTROLLED_P1` and the same SHA as `expected_harness_sha`.
 
 Do not treat push/pull-request smoke output as controlled source evidence.
 
