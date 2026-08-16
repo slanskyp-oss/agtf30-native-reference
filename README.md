@@ -19,7 +19,7 @@ This is not a historical MATLAB-2015a runtime reproduction.
 
 ## Public-content boundary
 
-Repository content is allowlist-only and limited to public NASA source identities, generic source-native reference conditions, CI/build/run tooling, execution provenance, generic raw native outputs, schema-discovery inventories, and integrity manifests. The workflow has no path, token, secret, checkout, or dependency for downstream private engineering repositories.
+Repository content is allowlist-only and limited to public NASA source identities, generic source-native reference conditions, CI/build/run tooling, execution provenance, generic raw native outputs, schema inventories, reviewed generic semantic mapping, derivative semantic-deck candidate evidence, and integrity manifests. The workflow has no path, token, secret, checkout, or dependency for downstream private engineering repositories.
 
 Information flow is one-way: **public NASA source → generic evidence artifact → offline/private downstream assessment**.
 
@@ -78,9 +78,18 @@ The whole controlled job timeout is 240 minutes. The authoritative native acquis
 
 ## Evidence authority
 
-Raw MAT files containing native `out_*`, `MWS`, requested input and source-setup state are the authoritative generic-source evidence. Parsed numeric inventories are derivative **schema-discovery only** until a reviewed semantic mapping is established and the same controlled points are rerun.
+Raw MAT files containing native `out_*`, `MWS`, requested input and source-setup state are the authoritative generic-source evidence. Parsed numeric inventories remain derivative diagnostics. A reviewed generic semantic mapping contract is hash-bound by the semantic exporter; semantic JSON produced from the same controlled native points is derivative **semantic-deck candidate evidence** and requires downstream Oversight acceptance before semantic P1 authority is established.
 
 GitHub artifact retention is transport/storage only. A qualifying artifact should be downloaded, SHA-256 verified, and preserved in controlled downstream storage together with its run and harness provenance.
+
+
+## Reviewed semantic mapping
+
+`config/p1_semantic_mapping.json` is the reviewed generic source-semantic contract for this tooling revision. `scripts/nref_export_semantic_p1.m` fails closed on mapping hash/schema mismatch, missing paths, wrong scalar/vector shape, non-finite required values, disallowed transformations, component-schema mismatch, unsupported promoted component data, or controlled harness/run-binding mismatch.
+
+All 68 reviewed `out_SS` mappings retain source-native units. Runtime numeric `out_SS` paths must match the reviewed 68-path set exactly; missing or additional numeric paths fail. The 12-element solver vectors retain source order and carry explicit native `value_shape`; JSON array orientation is not treated as MATLAB shape authority after decoding. Each per-point semantic record carries reviewed and current-run source identity with hard commit binding, harness/run binding, and the relative path plus SHA-256 of its authoritative raw MAT. Raw MAT remains authoritative.
+
+Per-point semantic success is `SEMANTIC_EXTRACTION_PASS_CANDIDATE`. Native and semantic point statuses are separate: semantic extraction failure does not overwrite a valid native convergence PASS, but it does fail aggregate semantic qualification. Aggregate controlled success is only a semantic-deck candidate requiring downstream Oversight artifact acceptance.
 
 ## Compatibility branch
 

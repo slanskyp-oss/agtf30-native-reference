@@ -1,0 +1,1518 @@
+{
+  "schema": "NREF_P1_SEMANTIC_MAPPING_CONTRACT_v1.0-R1",
+  "classification": "GENERIC NASA AGTF30/T-MATS SOURCE-SEMANTIC CONTRACT",
+  "scope": "Generic native-source semantic mapping only. No aircraft, OEM-equivalence, installed-engine, or validation claim.",
+  "source_identity": {
+    "AGTF30_repository": "nasa/AGTF30",
+    "AGTF30_commit": "a1521a76930df92ae5611f3454fc612a8b574cdf",
+    "AGTF30_source_archive_sha256": "de2cb9e00f91d70afa6004e93dbb90a727fac129421356ea43532e1f7cfb495b",
+    "TMATS_repository": "nasa/T-MATS",
+    "TMATS_commit": "56066ead5f461c33286425bd928ff77ed03c5244",
+    "TMATS_declared_tag": "v1.3.0",
+    "TMATS_source_archive_sha256": "fdba1eed51e79d7de298caeec03f7b78add234236b6486e20ff61d71599d7b43"
+  },
+  "run3_schema_basis": {
+    "reference_run_id": "31948234098",
+    "reference_harness_sha": "5bebd3e94bb3e25f90004d64861eaa654b255e86",
+    "reference_harness_tree": "79be4eb694b4444dda0d48e8a65fbd709b44f1ea",
+    "point_count": 18,
+    "out_SS_numeric_path_count": 68,
+    "schema_signature": "IDENTICAL_PATH_CLASS_SIZE_STATUS_ACROSS_ALL_18_POINTS",
+    "raw_mat_authority": "AUTHORITATIVE",
+    "run3_semantic_authority": "SCHEMA_DISCOVERY_ONLY"
+  },
+  "extraction_policy": {
+    "out_SS_storage": "Timeseries",
+    "out_SS_MaxDataPoints": 1,
+    "scalar_rule": "Require exact expected path and 1x1 Data; use the single retained native Data sample. No averaging/interpolation.",
+    "vector_rule": "Require exact 1x12 Data and preserve element order. No sorting/relabeling by magnitude.",
+    "finite_rule": "All numeric semantic fields required by the contract must be finite unless an explicit per-field exception is added by controlled revision.",
+    "missing_or_shape_mismatch": "FAIL_CLOSED_SEMANTIC_PARSER",
+    "unit_conversion": "NONE_IN_P1_NATIVE_DECK",
+    "raw_preservation": "Semantic outputs are derivative; raw MAT remains authoritative."
+  },
+  "station_topology": {
+    "S0": "Ambient block gas-path state / external ambient stream.",
+    "S2": "Inlet exit / fan inlet gas-path state.",
+    "S21": "Fan exit immediately upstream of splitter.",
+    "S25": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC.",
+    "S36": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path.",
+    "S4": "Combustor exit / HPT inlet.",
+    "S45": "HPT exit / back-end input upstream of duct45/LPT path.",
+    "S5": "LPT exit.",
+    "S7": "Duct5 exit / core-nozzle inlet.",
+    "S17": "Bypass duct17 exit / variable bypass-nozzle inlet."
+  },
+  "out_SS_mapping": [
+    {
+      "native_path": "out_SS.Alt.Data",
+      "semantic_name": "ambient_altitude",
+      "unit": "ft",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient/source operating altitude.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.dT.Data",
+      "semantic_name": "ambient_delta_temperature",
+      "unit": "degF",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Delta temperature relative to ambient standard atmosphere input.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.MN.Data",
+      "semantic_name": "flight_mach",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Flight Mach number.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.Wf.Data",
+      "semantic_name": "fuel_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Engine fuel mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.VAFN.Data",
+      "semantic_name": "bypass_variable_nozzle_area_demand",
+      "unit": "in^2",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "AGTF30 bypass/fan-stream variable-nozzle area demand. Exact source wiring applies the same VAFN signal to T-MATS NozVar Ath and Aexit inputs. This is a source-model command/state, not an OEM-specific installed-nozzle geometry claim.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "source_wiring": "VAFNdmd -> BypNoz port 3 (Ath) AND BypNoz port 4 (Aexit)"
+    },
+    {
+      "native_path": "out_SS.VBV.Data",
+      "semantic_name": "vbv_source_demand_position",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "AGTF30 source-model VBV normalized demand/position signal used directly by the valve path: 0 fully closed, 1 fully open. It is not a measured physical actuator-state claim.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.Pa.Data",
+      "semantic_name": "ambient_static_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient static pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.S0.W.Data",
+      "semantic_name": "s0_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient block gas-path state / external ambient stream. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S0",
+      "station_semantics": "Ambient block gas-path state / external ambient stream."
+    },
+    {
+      "native_path": "out_SS.S0.ht.Data",
+      "semantic_name": "s0_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient block gas-path state / external ambient stream. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S0",
+      "station_semantics": "Ambient block gas-path state / external ambient stream."
+    },
+    {
+      "native_path": "out_SS.S0.Tt.Data",
+      "semantic_name": "s0_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient block gas-path state / external ambient stream. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S0",
+      "station_semantics": "Ambient block gas-path state / external ambient stream."
+    },
+    {
+      "native_path": "out_SS.S0.Pt.Data",
+      "semantic_name": "s0_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient block gas-path state / external ambient stream. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S0",
+      "station_semantics": "Ambient block gas-path state / external ambient stream."
+    },
+    {
+      "native_path": "out_SS.S0.FAR.Data",
+      "semantic_name": "s0_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Ambient block gas-path state / external ambient stream. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S0",
+      "station_semantics": "Ambient block gas-path state / external ambient stream."
+    },
+    {
+      "native_path": "out_SS.S2.W.Data",
+      "semantic_name": "s2_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Inlet exit / fan inlet gas-path state. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S2",
+      "station_semantics": "Inlet exit / fan inlet gas-path state."
+    },
+    {
+      "native_path": "out_SS.S2.ht.Data",
+      "semantic_name": "s2_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Inlet exit / fan inlet gas-path state. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S2",
+      "station_semantics": "Inlet exit / fan inlet gas-path state."
+    },
+    {
+      "native_path": "out_SS.S2.Tt.Data",
+      "semantic_name": "s2_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Inlet exit / fan inlet gas-path state. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S2",
+      "station_semantics": "Inlet exit / fan inlet gas-path state."
+    },
+    {
+      "native_path": "out_SS.S2.Pt.Data",
+      "semantic_name": "s2_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Inlet exit / fan inlet gas-path state. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S2",
+      "station_semantics": "Inlet exit / fan inlet gas-path state."
+    },
+    {
+      "native_path": "out_SS.S2.FAR.Data",
+      "semantic_name": "s2_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Inlet exit / fan inlet gas-path state. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S2",
+      "station_semantics": "Inlet exit / fan inlet gas-path state."
+    },
+    {
+      "native_path": "out_SS.S21.W.Data",
+      "semantic_name": "s21_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan exit immediately upstream of splitter. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S21",
+      "station_semantics": "Fan exit immediately upstream of splitter."
+    },
+    {
+      "native_path": "out_SS.S21.ht.Data",
+      "semantic_name": "s21_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan exit immediately upstream of splitter. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S21",
+      "station_semantics": "Fan exit immediately upstream of splitter."
+    },
+    {
+      "native_path": "out_SS.S21.Tt.Data",
+      "semantic_name": "s21_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan exit immediately upstream of splitter. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S21",
+      "station_semantics": "Fan exit immediately upstream of splitter."
+    },
+    {
+      "native_path": "out_SS.S21.Pt.Data",
+      "semantic_name": "s21_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan exit immediately upstream of splitter. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S21",
+      "station_semantics": "Fan exit immediately upstream of splitter."
+    },
+    {
+      "native_path": "out_SS.S21.FAR.Data",
+      "semantic_name": "s21_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan exit immediately upstream of splitter. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S21",
+      "station_semantics": "Fan exit immediately upstream of splitter."
+    },
+    {
+      "native_path": "out_SS.S25.W.Data",
+      "semantic_name": "s25_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S25",
+      "station_semantics": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC."
+    },
+    {
+      "native_path": "out_SS.S25.ht.Data",
+      "semantic_name": "s25_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S25",
+      "station_semantics": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC."
+    },
+    {
+      "native_path": "out_SS.S25.Tt.Data",
+      "semantic_name": "s25_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S25",
+      "station_semantics": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC."
+    },
+    {
+      "native_path": "out_SS.S25.Pt.Data",
+      "semantic_name": "s25_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S25",
+      "station_semantics": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC."
+    },
+    {
+      "native_path": "out_SS.S25.FAR.Data",
+      "semantic_name": "s25_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S25",
+      "station_semantics": "Core stream downstream of LPC/VBV/duct25 and upstream of HPC."
+    },
+    {
+      "native_path": "out_SS.S36.W.Data",
+      "semantic_name": "s36_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.ht.Data",
+      "semantic_name": "s36_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.Tt.Data",
+      "semantic_name": "s36_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.Pt.Data",
+      "semantic_name": "s36_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.FAR.Data",
+      "semantic_name": "s36_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.Ps.Data",
+      "semantic_name": "s36_static_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native static pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S36.Ts.Data",
+      "semantic_name": "s36_static_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path. Native static temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S36",
+      "station_semantics": "HPC discharge / combustor inlet; includes StaticCalc Ps/Ts in addition to total-state gas path."
+    },
+    {
+      "native_path": "out_SS.S4.W.Data",
+      "semantic_name": "s4_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Combustor exit / HPT inlet. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S4",
+      "station_semantics": "Combustor exit / HPT inlet."
+    },
+    {
+      "native_path": "out_SS.S4.ht.Data",
+      "semantic_name": "s4_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Combustor exit / HPT inlet. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S4",
+      "station_semantics": "Combustor exit / HPT inlet."
+    },
+    {
+      "native_path": "out_SS.S4.Tt.Data",
+      "semantic_name": "s4_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Combustor exit / HPT inlet. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S4",
+      "station_semantics": "Combustor exit / HPT inlet."
+    },
+    {
+      "native_path": "out_SS.S4.Pt.Data",
+      "semantic_name": "s4_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Combustor exit / HPT inlet. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S4",
+      "station_semantics": "Combustor exit / HPT inlet."
+    },
+    {
+      "native_path": "out_SS.S4.FAR.Data",
+      "semantic_name": "s4_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Combustor exit / HPT inlet. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S4",
+      "station_semantics": "Combustor exit / HPT inlet."
+    },
+    {
+      "native_path": "out_SS.S45.W.Data",
+      "semantic_name": "s45_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPT exit / back-end input upstream of duct45/LPT path. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S45",
+      "station_semantics": "HPT exit / back-end input upstream of duct45/LPT path."
+    },
+    {
+      "native_path": "out_SS.S45.ht.Data",
+      "semantic_name": "s45_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPT exit / back-end input upstream of duct45/LPT path. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S45",
+      "station_semantics": "HPT exit / back-end input upstream of duct45/LPT path."
+    },
+    {
+      "native_path": "out_SS.S45.Tt.Data",
+      "semantic_name": "s45_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPT exit / back-end input upstream of duct45/LPT path. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S45",
+      "station_semantics": "HPT exit / back-end input upstream of duct45/LPT path."
+    },
+    {
+      "native_path": "out_SS.S45.Pt.Data",
+      "semantic_name": "s45_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPT exit / back-end input upstream of duct45/LPT path. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S45",
+      "station_semantics": "HPT exit / back-end input upstream of duct45/LPT path."
+    },
+    {
+      "native_path": "out_SS.S45.FAR.Data",
+      "semantic_name": "s45_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "HPT exit / back-end input upstream of duct45/LPT path. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S45",
+      "station_semantics": "HPT exit / back-end input upstream of duct45/LPT path."
+    },
+    {
+      "native_path": "out_SS.S5.W.Data",
+      "semantic_name": "s5_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "LPT exit. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S5",
+      "station_semantics": "LPT exit."
+    },
+    {
+      "native_path": "out_SS.S5.ht.Data",
+      "semantic_name": "s5_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "LPT exit. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S5",
+      "station_semantics": "LPT exit."
+    },
+    {
+      "native_path": "out_SS.S5.Tt.Data",
+      "semantic_name": "s5_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "LPT exit. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S5",
+      "station_semantics": "LPT exit."
+    },
+    {
+      "native_path": "out_SS.S5.Pt.Data",
+      "semantic_name": "s5_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "LPT exit. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S5",
+      "station_semantics": "LPT exit."
+    },
+    {
+      "native_path": "out_SS.S5.FAR.Data",
+      "semantic_name": "s5_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "LPT exit. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S5",
+      "station_semantics": "LPT exit."
+    },
+    {
+      "native_path": "out_SS.S7.W.Data",
+      "semantic_name": "s7_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Duct5 exit / core-nozzle inlet. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S7",
+      "station_semantics": "Duct5 exit / core-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S7.ht.Data",
+      "semantic_name": "s7_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Duct5 exit / core-nozzle inlet. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S7",
+      "station_semantics": "Duct5 exit / core-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S7.Tt.Data",
+      "semantic_name": "s7_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Duct5 exit / core-nozzle inlet. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S7",
+      "station_semantics": "Duct5 exit / core-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S7.Pt.Data",
+      "semantic_name": "s7_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Duct5 exit / core-nozzle inlet. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S7",
+      "station_semantics": "Duct5 exit / core-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S7.FAR.Data",
+      "semantic_name": "s7_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Duct5 exit / core-nozzle inlet. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S7",
+      "station_semantics": "Duct5 exit / core-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S17.W.Data",
+      "semantic_name": "s17_mass_flow",
+      "unit": "lbm/s (pps)",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Bypass duct17 exit / variable bypass-nozzle inlet. Native mass flow.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S17",
+      "station_semantics": "Bypass duct17 exit / variable bypass-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S17.ht.Data",
+      "semantic_name": "s17_specific_enthalpy",
+      "unit": "BTU/lbm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Bypass duct17 exit / variable bypass-nozzle inlet. Native specific enthalpy.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S17",
+      "station_semantics": "Bypass duct17 exit / variable bypass-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S17.Tt.Data",
+      "semantic_name": "s17_total_temperature",
+      "unit": "degR",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Bypass duct17 exit / variable bypass-nozzle inlet. Native total temperature.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S17",
+      "station_semantics": "Bypass duct17 exit / variable bypass-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S17.Pt.Data",
+      "semantic_name": "s17_total_pressure",
+      "unit": "psia",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Bypass duct17 exit / variable bypass-nozzle inlet. Native total pressure.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S17",
+      "station_semantics": "Bypass duct17 exit / variable bypass-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.S17.FAR.Data",
+      "semantic_name": "s17_fuel_air_ratio",
+      "unit": "frac",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Bypass duct17 exit / variable bypass-nozzle inlet. Native fuel air ratio.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "station": "S17",
+      "station_semantics": "Bypass duct17 exit / variable bypass-nozzle inlet."
+    },
+    {
+      "native_path": "out_SS.N_Fan.Data",
+      "semantic_name": "fan_mechanical_speed",
+      "unit": "rpm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Fan mechanical shaft speed after source gearbox.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.N_LPC.Data",
+      "semantic_name": "lp_spool_lpc_mechanical_speed",
+      "unit": "rpm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Low-pressure spool / LPC mechanical shaft speed.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.N_HPC.Data",
+      "semantic_name": "hp_spool_hpc_mechanical_speed",
+      "unit": "rpm",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "High-pressure spool / HPC mechanical shaft speed.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.Fdrag.Data",
+      "semantic_name": "ram_drag",
+      "unit": "lbf",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Positive ram-drag magnitude from ambient block; used as Fram in Fnet=Fg-Fram.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.Fnet.Data",
+      "semantic_name": "net_thrust",
+      "unit": "lbf",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Native net thrust; T-MATS relation Fnet = Fg - Fram.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.Fg.Data",
+      "semantic_name": "gross_thrust_total",
+      "unit": "lbf",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Total engine gross thrust routed from core+bypass gross-thrust sum.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    },
+    {
+      "native_path": "out_SS.independents.Data",
+      "semantic_name": "solver_independents",
+      "unit": "mixed",
+      "quality_class": "P1_DIAGNOSTIC_NATIVE",
+      "required_shape": "[1 12]",
+      "extraction_rule": "EXACT_1X12_VECTOR_NO_REORDER",
+      "meaning": "Exact 12-element steady-state solver independent vector.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "elements": [
+        {
+          "index": 1,
+          "name": "engine_inlet_flow_solver_independent",
+          "unit": "lbm/s (pps)",
+          "meaning": "Common solver independent: flow."
+        },
+        {
+          "index": 2,
+          "name": "hpt_pressure_ratio_solver_independent",
+          "unit": "frac",
+          "meaning": "Common solver independent: HPT pressure ratio."
+        },
+        {
+          "index": 3,
+          "name": "hpc_rline_solver_independent",
+          "unit": "source map coordinate",
+          "meaning": "Common solver independent: HPC Rline."
+        },
+        {
+          "index": 4,
+          "name": "fan_rline_solver_independent",
+          "unit": "source map coordinate",
+          "meaning": "Common solver independent: fan Rline."
+        },
+        {
+          "index": 5,
+          "name": "branch_pressure_ratio_solver_independent",
+          "unit": "frac",
+          "meaning": "Common solver independent: branch pressure ratio."
+        },
+        {
+          "index": 6,
+          "name": "lpc_rline_solver_independent",
+          "unit": "source map coordinate",
+          "meaning": "Common solver independent: LPC Rline."
+        },
+        {
+          "index": 7,
+          "name": "lpt_pressure_ratio_solver_independent",
+          "unit": "frac",
+          "meaning": "Common solver independent: LPT pressure ratio."
+        },
+        {
+          "index": 8,
+          "name": "lp_shaft_speed_solver_independent",
+          "unit": "rpm",
+          "meaning": "Steady-state-only independent: low-pressure shaft speed."
+        },
+        {
+          "index": 9,
+          "name": "hp_shaft_speed_solver_independent",
+          "unit": "rpm",
+          "meaning": "Steady-state-only independent: high-pressure shaft speed."
+        },
+        {
+          "index": 10,
+          "name": "fuel_flow_solver_independent",
+          "unit": "lbm/s (pps)",
+          "meaning": "Steady-state-only independent: fuel flow."
+        },
+        {
+          "index": 11,
+          "name": "vafn_area_solver_independent",
+          "unit": "in^2",
+          "meaning": "Steady-state-only independent: VAFN area."
+        },
+        {
+          "index": 12,
+          "name": "vbv_plus_one_solver_coordinate",
+          "unit": "frac",
+          "meaning": "Steady-state-only solver coordinate = actual VBV + 1; 1 closed, 2 open."
+        }
+      ]
+    },
+    {
+      "native_path": "out_SS.dependents.Data",
+      "semantic_name": "solver_dependents",
+      "unit": "mixed",
+      "quality_class": "P1_DIAGNOSTIC_NATIVE",
+      "required_shape": "[1 12]",
+      "extraction_rule": "EXACT_1X12_VECTOR_NO_REORDER",
+      "meaning": "Exact 12-element steady-state solver dependent/residual vector.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT",
+      "elements": [
+        {
+          "index": 1,
+          "name": "fan_normalized_error",
+          "unit": "frac",
+          "meaning": "Fan T-MATS normalized error residual."
+        },
+        {
+          "index": 2,
+          "name": "lpc_normalized_error",
+          "unit": "frac",
+          "meaning": "LPC T-MATS normalized error residual."
+        },
+        {
+          "index": 3,
+          "name": "hpc_normalized_error",
+          "unit": "frac",
+          "meaning": "HPC T-MATS normalized error residual."
+        },
+        {
+          "index": 4,
+          "name": "hpt_normalized_error",
+          "unit": "frac",
+          "meaning": "HPT T-MATS normalized error residual."
+        },
+        {
+          "index": 5,
+          "name": "lpt_normalized_error",
+          "unit": "frac",
+          "meaning": "LPT T-MATS normalized error residual."
+        },
+        {
+          "index": 6,
+          "name": "core_nozzle_normalized_error",
+          "unit": "frac",
+          "meaning": "Core-nozzle T-MATS normalized error residual."
+        },
+        {
+          "index": 7,
+          "name": "bypass_nozzle_normalized_error",
+          "unit": "frac",
+          "meaning": "Bypass variable-nozzle T-MATS normalized error residual."
+        },
+        {
+          "index": 8,
+          "name": "lp_shaft_acceleration_residual",
+          "unit": "rpm/s",
+          "meaning": "Low-pressure shaft Ndot residual."
+        },
+        {
+          "index": 9,
+          "name": "hp_shaft_acceleration_residual",
+          "unit": "rpm/s",
+          "meaning": "High-pressure shaft Ndot residual."
+        },
+        {
+          "index": 10,
+          "name": "fan_corrected_speed_schedule_residual",
+          "unit": "corrected rpm",
+          "meaning": "Source fan corrected-speed setpoint minus current corrected fan speed."
+        },
+        {
+          "index": 11,
+          "name": "vbv_schedule_residual",
+          "unit": "frac",
+          "meaning": "VBV schedule setpoint minus actual VBV."
+        },
+        {
+          "index": 12,
+          "name": "vafn_schedule_residual",
+          "unit": "in^2",
+          "meaning": "VAFN schedule setpoint minus actual VAFN."
+        }
+      ]
+    },
+    {
+      "native_path": "out_SS.converged.Data",
+      "semantic_name": "native_converged_flag",
+      "unit": "logical",
+      "quality_class": "P1_PRIMARY_DIRECT_NATIVE",
+      "required_shape": "[1 1]",
+      "extraction_rule": "EXACT_SINGLE_RETAINED_TIMESERIES_DATA_SCALAR",
+      "meaning": "Native steady-state solver convergence flag.",
+      "allowed_transformation": "NONE",
+      "authority": "DIRECT_NATIVE_RUN_OUTPUT"
+    }
+  ],
+  "component_diagnostics": {
+    "compressors": {
+      "variables": [
+        "out_FANmp",
+        "out_LPCmp",
+        "out_HPCmp"
+      ],
+      "raw_fields": [
+        "BlkNm",
+        "EffHPMod",
+        "EffMap",
+        "Nc",
+        "NcMap",
+        "Nmech",
+        "PR",
+        "PRHPMod",
+        "PRMap",
+        "PwrBld",
+        "Pwrb4bleed",
+        "Pwrout",
+        "SMMap",
+        "SMavail",
+        "SPRMap",
+        "SurgePR",
+        "Test",
+        "WHPMod",
+        "Wbleeds",
+        "WcMap",
+        "Wcin",
+        "s_C_Eff",
+        "s_C_Nc",
+        "s_C_PR",
+        "s_C_Wc"
+      ],
+      "promoted_diagnostics": {
+        "Wcin": "Corrected input mass flow [pps].",
+        "Nc": "Corrected shaft speed [rpm].",
+        "Nmech": "Mechanical shaft speed [rpm].",
+        "PR": "Actual/scaled pressure ratio [frac].",
+        "SurgePR": "Actual/scaled surge pressure ratio at current corrected flow.",
+        "SMavail": "Source-defined available stall margin [%]. With AGTF30 SMNEn_M=off, T-MATS uses constant-corrected-flow definition and source-supplied surge vector.",
+        "SMMap": "Map-space stall margin [%].",
+        "Pwrout": "Total output power [hp]."
+      },
+      "map_diagnostics": {
+        "NcMap": "Native compressor-map corrected-speed coordinate.",
+        "WcMap": "Native compressor-map corrected-flow coordinate; do not relabel as aircraft/OEM flow without source transformation.",
+        "PRMap": "Compressor-map pressure-ratio coordinate.",
+        "EffMap": "Map efficiency only; actual T-MATS efficiency is EffMap \u00d7 s_C_Eff.",
+        "SPRMap": "Map stall/surge pressure-ratio coordinate."
+      },
+      "stall_margin_basis": {
+        "DefSMEn_M": "off",
+        "SMNEn_M": "off",
+        "source_surge_vector": "AGTF30 setup scripts build SM_WcVec / SM_PRVec from Rline=1 map boundary plus source extrapolated endpoint.",
+        "formula": "SMavail=(SPR-PR)/PR*100; SMMap=(SPRMap-PRMap)/PRMap*100",
+        "interpretation_limit": "Generic AGTF30/T-MATS source stall-margin metric; NOT an OEM-specific stall-margin claim."
+      },
+      "field_contract": {
+        "BlkNm": {
+          "unit": "metadata",
+          "class": "NOT_PROMOTED_METADATA",
+          "meaning": "Block name encoded by source."
+        },
+        "EffHPMod": {
+          "unit": "unresolved",
+          "class": "NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD",
+          "meaning": "Present in Run #3 raw source structure but not defined by the reviewed T-MATS compressor public output table; preserve raw only until separately traced."
+        },
+        "EffMap": {
+          "unit": "frac",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Compressor map efficiency; NOT actual efficiency. T-MATS actual Eff = EffMap*s_C_Eff."
+        },
+        "Nc": {
+          "unit": "rpm",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected shaft speed."
+        },
+        "NcMap": {
+          "unit": "native map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected shaft speed from compressor map."
+        },
+        "Nmech": {
+          "unit": "rpm",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Mechanical shaft speed from input."
+        },
+        "PR": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Scaled/actual compressor pressure ratio."
+        },
+        "PRHPMod": {
+          "unit": "unresolved",
+          "class": "NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD",
+          "meaning": "Present in Run #3 raw source structure but not defined by the reviewed T-MATS compressor public output table; preserve raw only until separately traced."
+        },
+        "PRMap": {
+          "unit": "frac / native map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Pressure ratio from compressor map."
+        },
+        "PwrBld": {
+          "unit": "hp",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Bled-off power."
+        },
+        "Pwrb4bleed": {
+          "unit": "hp",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Power required to run compressor before bleed effects; source documentation labels this Pwrb4bleeds."
+        },
+        "Pwrout": {
+          "unit": "hp",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Total output power."
+        },
+        "SMMap": {
+          "unit": "%",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Stall margin based on map values."
+        },
+        "SMavail": {
+          "unit": "%",
+          "class": "P1_DIAGNOSTIC_NATIVE_LIMITED",
+          "meaning": "T-MATS source-defined available stall margin; generic AGTF30 metric, not an OEM-specific stall-margin claim."
+        },
+        "SPRMap": {
+          "unit": "frac / native map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Stall/surge pressure ratio from map."
+        },
+        "SurgePR": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Scaled/actual surge pressure ratio at current corrected flow."
+        },
+        "Test": {
+          "unit": "internal",
+          "class": "NOT_PROMOTED_INTERNAL_DIAGNOSTIC",
+          "meaning": "T-MATS internal calculation data; preserve raw only."
+        },
+        "WHPMod": {
+          "unit": "unresolved",
+          "class": "NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD",
+          "meaning": "Present in Run #3 raw source structure but not defined by the reviewed T-MATS compressor public output table; preserve raw only until separately traced."
+        },
+        "Wbleeds": {
+          "unit": "lbm/s (pps)",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Mass flow diverted to bleeds."
+        },
+        "WcMap": {
+          "unit": "native corrected-flow map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected mass-flow coordinate from compressor map."
+        },
+        "Wcin": {
+          "unit": "lbm/s (pps)",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected input mass flow."
+        },
+        "s_C_Eff": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Efficiency map scalar."
+        },
+        "s_C_Nc": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected-speed map scalar."
+        },
+        "s_C_PR": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Pressure-ratio map scalar."
+        },
+        "s_C_Wc": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected-flow map scalar."
+        }
+      }
+    },
+    "turbines": {
+      "variables": [
+        "out_HPTmp",
+        "out_LPTmp"
+      ],
+      "raw_fields": [
+        "BlkNm",
+        "EffHPMod",
+        "EffMap",
+        "Nc",
+        "NcMap",
+        "Nmech",
+        "PRMap",
+        "Pwrout",
+        "Test",
+        "WHPMod",
+        "WcMap",
+        "Wcin",
+        "Wcs1in",
+        "s_T_Eff",
+        "s_T_Nc",
+        "s_T_PR",
+        "s_T_Wc"
+      ],
+      "promoted_diagnostics": {
+        "Wcin": "Corrected input mass flow [pps].",
+        "Wcs1in": "Corrected mass flow after station 1 / cooling-flow addition [pps].",
+        "Nc": "Corrected shaft speed [rpm].",
+        "Nmech": "Mechanical shaft speed [rpm].",
+        "Pwrout": "Output power [hp]."
+      },
+      "map_diagnostics": {
+        "NcMap": "Native turbine-map corrected-speed coordinate.",
+        "WcMap": "Native turbine-map corrected-flow coordinate.",
+        "PRMap": "Native turbine-map pressure-ratio coordinate.",
+        "EffMap": "Map efficiency only; actual T-MATS efficiency is EffMap \u00d7 s_T_Eff."
+      },
+      "field_contract": {
+        "BlkNm": {
+          "unit": "metadata",
+          "class": "NOT_PROMOTED_METADATA",
+          "meaning": "Block name encoded by source."
+        },
+        "EffHPMod": {
+          "unit": "unresolved",
+          "class": "NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD",
+          "meaning": "Present in Run #3 raw source structure but not defined by the reviewed T-MATS turbine public output table; preserve raw only until separately traced."
+        },
+        "EffMap": {
+          "unit": "frac",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Turbine map efficiency; NOT actual efficiency. T-MATS actual Eff = EffMap*s_T_Eff."
+        },
+        "Nc": {
+          "unit": "rpm",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected shaft speed."
+        },
+        "NcMap": {
+          "unit": "native map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected shaft speed from turbine map."
+        },
+        "Nmech": {
+          "unit": "rpm",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Mechanical shaft speed from input."
+        },
+        "PRMap": {
+          "unit": "frac / native map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Pressure ratio from turbine map."
+        },
+        "Pwrout": {
+          "unit": "hp",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Output power."
+        },
+        "Test": {
+          "unit": "internal",
+          "class": "NOT_PROMOTED_INTERNAL_DIAGNOSTIC",
+          "meaning": "T-MATS internal calculation data; preserve raw only."
+        },
+        "WHPMod": {
+          "unit": "unresolved",
+          "class": "NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD",
+          "meaning": "Present in Run #3 raw source structure but not defined by the reviewed T-MATS turbine public output table; preserve raw only until separately traced."
+        },
+        "WcMap": {
+          "unit": "native corrected-flow map coordinate",
+          "class": "P1_MAP_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected mass-flow coordinate from turbine map."
+        },
+        "Wcin": {
+          "unit": "lbm/s (pps)",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected input mass flow."
+        },
+        "Wcs1in": {
+          "unit": "lbm/s (pps)",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected mass flow after station 1 / input cooling-flow addition."
+        },
+        "s_T_Eff": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Efficiency map scalar."
+        },
+        "s_T_Nc": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected-speed map scalar."
+        },
+        "s_T_PR": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Pressure-ratio map scalar."
+        },
+        "s_T_Wc": {
+          "unit": "frac",
+          "class": "P1_DIAGNOSTIC_NATIVE",
+          "meaning": "Corrected-flow map scalar."
+        }
+      }
+    }
+  },
+  "warning_policy": {
+    "source_warning": "Warning in AGTF30_eng/Engine/BackEng/CoreNoz, Backflow warning PtIn <= Pamb",
+    "occurrence_count_run3": 1,
+    "assignment": "SRC-PP-01",
+    "assignment_method": "EXECUTION_ORDER_CORRELATION",
+    "assignment_evidence_strength": "STRONG_INFERENCE_NOT_DIRECT_POINT_LABEL",
+    "assignment_basis": "The controlled grid runner executes reference_grid.csv deterministically with for i=1:height(T). The warning occurs during the 15th steady-state IC-generation cycle. The 15th executed grid point is SRC-PP-01. The diary warning itself does not contain a point identifier.",
+    "final_state_cross_check": {
+      "Pa_psia": 14.696,
+      "S7_Pt_psia": 15.1616520058816,
+      "S7_Pt_minus_Pa_psia": 0.4656520058816,
+      "Fdrag_lbf": 0.0,
+      "Fg_lbf": 10583.5368640582,
+      "Fnet_lbf": 10583.5368640582,
+      "converged": 1
+    },
+    "disposition": "ACCEPTED_WITH_CONVERGENCE_PATH_WARNING",
+    "interpretation": "Retain as native convergence-path evidence. The accepted final SRC-PP-01 state has S7.Pt > Pa and does not itself demonstrate final-state core-nozzle backflow.",
+    "parser_requirement": "Preserve a warning/disposition flag in semantic evidence; do not suppress or silently discard the event."
+  },
+  "applicability_limits": [
+    "This contract maps generic AGTF30/T-MATS source semantics only.",
+    "No field is OEM-specific engine data or downstream installed-aircraft validation evidence.",
+    "FAN source setup includes low-Nc extrapolated map rows for convergence.",
+    "HPT source setup includes high-Nc extrapolated map rows for convergence.",
+    "LPT source setup includes extrapolated map regions for convergence.",
+    "Map-coordinate and stall-margin diagnostics therefore require source-model applicability flags and must not be promoted to OEM operability margins.",
+    "Generic source correlation does not by itself validate any downstream aircraft-specific hot-day performance."
+  ],
+  "source_traceability": {
+    "AGTF30_setup_inputs": {
+      "path": "AGTF30/SimSetup/setup_InputsSS.m",
+      "authority": "Exact Run #3 AGTF30 source",
+      "markers": [
+        "AltIC [ft], dTambIC [deg F], MNIC",
+        "WfIC [pps]",
+        "VBVIC 0 closed / 1 open",
+        "VAFNIC fan nozzle area [in^2]",
+        "ICcom(1..7) solver independents",
+        "ICss(1..5) LP/HP shaft rpm, Wf, VAFN, VBV+1",
+        "out_SS.independents.Data(end,1:7/8:end)"
+      ]
+    },
+    "AGTF30_ss_model": {
+      "path": "AGTF30/AGTF30SysSS.mdl",
+      "authority": "Exact Run #3 AGTF30 source",
+      "markers": [
+        "out_SS ToWorkspace MaxDataPoints=1 SaveFormat=Timeseries",
+        "EngOut.Perf.Fdrag/Fnet/Fg",
+        "EngOut.S0/S2/S21/S25/S36/S4/S45/S5/S7/S17",
+        "N_Fan/N_LPC/N_HPC",
+        "Solver.independents/dependents/converged",
+        "VAFN and VBV schedule error terms"
+      ]
+    },
+    "AGTF30_engine_model": {
+      "path": "AGTF30/AGTF30_eng.mdl",
+      "authority": "Exact Run #3 AGTF30 source",
+      "markers": [
+        "CoreNoz and BypNoz topology",
+        "Fgross/Fnet routing",
+        "S36 Static Calc",
+        "shaft N_Fan/N_LPC/N_HPC",
+        "compressor DefSMEn_M=off, SMNEn_M=off"
+      ]
+    },
+    "TMATS_ambient": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_Amb.html",
+      "markers": [
+        "Alt [ft]",
+        "dTamb [degF]",
+        "MN [frac]",
+        "gas path W/ht/Tt/Pt units",
+        "Fdrag Ram Drag [lbf]"
+      ]
+    },
+    "TMATS_sfc": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_SFC.html",
+      "markers": [
+        "Fnet = Fg - Fram",
+        "Wf [pps]",
+        "Fg [lbf]",
+        "Fram [lbf]",
+        "Fnet [lbf]"
+      ]
+    },
+    "TMATS_nozzle": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_NozVar.html",
+      "markers": [
+        "Ath [in^2]",
+        "Aexit [in^2]",
+        "Fg [lbf]"
+      ]
+    },
+    "TMATS_static_calc": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_StCalc.html",
+      "markers": [
+        "gas path W/ht/Tt/Pt units",
+        "Ts [degR]",
+        "Ps [psia]"
+      ]
+    },
+    "TMATS_compressor": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_Cmp.html",
+      "markers": [
+        "Nc=Nmech/sqrt(theta)",
+        "Eff=EffMap*C_Eff",
+        "SMavail/SMMap formulas",
+        "Wcin [pps]",
+        "Nc [rpm]",
+        "Nmech [rpm]",
+        "Pwrout [hp]",
+        "SurgePR",
+        "map coordinates"
+      ]
+    },
+    "TMATS_turbine": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_Trb.html",
+      "markers": [
+        "Nc=Nmech/sqrt(theta)",
+        "Eff=EffMap*C_Eff",
+        "Wcin/Wcs1in [pps]",
+        "Nc [rpm]",
+        "Nmech [rpm]",
+        "Pwrout [hp]",
+        "map coordinates"
+      ]
+    },
+    "TMATS_shaft": {
+      "path": "Trunk/TMATS_Library/TMATS_Support/Turbo_TMATS_Shft.html",
+      "markers": [
+        "Nmech [rpm]",
+        "Ndot mechanical shaft acceleration [rpm/sec]"
+      ]
+    }
+  },
+  "acceptance_rules_for_semantic_rerun": [
+    "Exact mapping contract identity and SHA-256 preserved in controlled evidence.",
+    "18/18 source points execute and satisfy existing requested-vs-source-actual binding.",
+    "18/18 required semantic extractions pass path/shape/finite checks.",
+    "Raw MAT is saved before semantic extraction and remains authoritative.",
+    "Semantic output contains mapping contract schema/hash and source/harness/run binding.",
+    "SRC-PP-01 CoreNoz convergence-path warning is retained and explicitly flagged.",
+    "No semantic quantity is silently unit-converted, renamed to an OEM parameter, or used as an aircraft-level result.",
+    "Controlled run result is a semantic-deck CANDIDATE requiring Oversight artifact review; automated CI does not self-issue VAL."
+  ],
+  "revision_basis": [
+    "VAFN exact source wiring clarified: the same source demand feeds bypass NozVar Ath and Aexit.",
+    "CoreNoz warning assignment clarified as deterministic execution-order correlation, not a directly point-labelled warning.",
+    "VBV clarified as a source-model demand/position signal, not a measured actuator-state claim."
+  ],
+  "traceability_policy": {
+    "claim_rule": "Every promoted semantic quantity must trace to exact AGTF30/T-MATS source/model documentation or direct Run #3 native evidence.",
+    "unresolved_rule": "Insufficiently defined source fields remain raw-preserved and NOT_PROMOTED_UNRESOLVED_SOURCE_FIELD.",
+    "inference_rule": "Inferred associations must be labelled separately from direct source observations.",
+    "raw_authority": "Run #3 raw MAT remains authoritative over derivative semantic exports."
+  }
+}

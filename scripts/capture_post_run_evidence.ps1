@@ -8,6 +8,8 @@ Copy-Item -Force (Join-Path $root 'config/reference_grid.csv') (Join-Path $evide
 Copy-Item -Force (Join-Path $root 'config/input_match_tolerances.json') (Join-Path $evidence 'harness/input_match_tolerances.json')
 Copy-Item -Force (Join-Path $root 'config/toolchain_policy.json') (Join-Path $evidence 'harness/toolchain_policy.json')
 Copy-Item -Force (Join-Path $root 'config/timeout_policy.json') (Join-Path $evidence 'harness/timeout_policy.json')
+Copy-Item -Force (Join-Path $root 'config/p1_semantic_mapping.json') (Join-Path $evidence 'harness/p1_semantic_mapping.json')
+Copy-Item -Force (Join-Path $root 'docs/P1_SEMANTIC_MAPPING_BASIS.md') (Join-Path $evidence 'harness/P1_SEMANTIC_MAPPING_BASIS.md')
 Copy-Item -Force (Join-Path $root 'PUBLIC_CONTENT_ALLOWLIST.json') (Join-Path $evidence 'harness/PUBLIC_CONTENT_ALLOWLIST.json')
 Copy-Item -Force (Join-Path $root 'README.md') (Join-Path $evidence 'harness/README.md')
 

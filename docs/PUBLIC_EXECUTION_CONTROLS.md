@@ -17,7 +17,11 @@
 - `SOURCE_NONCONVERGED` requires executed native source output with an explicit native convergence quantity indicating nonconvergence.
 - Each generic reference point is independently executed; one failure does not suppress evidence from later points.
 - Source-actual flight/control inputs are compared against requested values before acceptance.
-- Raw native MAT output remains authoritative; parsed inventories are derivative schema-discovery evidence.
+- Raw native MAT output remains authoritative; parsed inventories are derivative diagnostics.
+- The reviewed semantic mapping contract is hash-bound; semantic export is fail-closed on contract/schema, exact runtime 68-path set, shape/value policy, reviewed-vs-current source hard identity, authoritative raw-MAT presence/hash, and controlled run-binding mismatch.
+- Semantic JSON is derivative semantic-deck candidate evidence and never replaces raw MAT authority.
+- Native execution status and semantic extraction status remain separate; semantic failure cannot rewrite a valid native convergence PASS.
+- Runner diary contains deterministic point start/end markers so reviewed source warnings can be contextualized machine-readably after execution; unexpected point context or growth beyond the reviewed baseline warning count fails semantic warning review.
 - MATLAB diary is preserved. The harness does not generate artificial redirected MATLAB stdout/stderr files.
 - Post-native source cleanliness, status finalization, hashing, artifact upload and transport recording remain after the run-command step and use `always()` where required.
 - Missing evidence files are an upload error.

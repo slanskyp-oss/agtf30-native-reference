@@ -38,6 +38,6 @@ catch ME
     nref_write_native_stage_status(repoRoot,'GRID_QUALIFICATION_FAIL','NATIVE_REFERENCE_GRID',getReport(ME,'extended','hyperlinks','off'));
     rethrow(ME)
 end
-nref_write_native_stage_status(repoRoot,'P1_COMPAT_NATIVE_SOURCE_CANDIDATE_PASS_SCHEMA_DISCOVERY','COMPLETE','All mandatory native points passed execution/convergence/input-binding and schema-discovery parsing. Semantic P1 deck still requires reviewed mapping and rerun.');
+nref_write_native_stage_status(repoRoot,'P1_NATIVE_GENERIC_SOURCE_REFERENCE_CANDIDATE_PASS_SEMANTIC_DECK','COMPLETE','All mandatory native points passed execution, convergence, input binding, schema inventory and reviewed semantic extraction. This is a semantic-deck candidate requiring Oversight artifact acceptance.');
 fprintf('Native source acquisition completed UTC: %s\n', char(datetime('now','TimeZone','UTC','Format','yyyy-MM-dd''T''HH:mm:ss.SSSXXX')));
 end

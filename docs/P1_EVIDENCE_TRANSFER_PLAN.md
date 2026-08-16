@@ -17,9 +17,12 @@ After a qualifying controlled run, download the generic source-evidence artifact
 11. timeout/watchdog record;
 12. complete generic reference-grid execution summary;
 13. raw MAT outputs for every attempted point;
-14. derivative schema-discovery outputs;
-15. evidence SHA-256 manifest;
-16. CI transport record.
+14. derivative schema-inventory outputs;
+15. exact reviewed semantic mapping contract and mapping SHA-256;
+16. per-point semantic-deck candidate outputs and semantic execution summaries;
+17. machine-readable current-run warning review;
+18. evidence SHA-256 manifest;
+19. CI transport record.
 
 The receiving controlled environment should calculate its own package SHA-256 and retain the imported artifact independently of CI retention.
 

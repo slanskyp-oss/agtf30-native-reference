@@ -1,16 +1,24 @@
 {
-  "schema": "NREF_POINT_AND_RUN_STATUS_CODES_v1.2.2",
+  "schema": "NREF_POINT_AND_RUN_STATUS_CODES_v1.2.5",
   "point_statuses": [
     "PASS_NATIVE_CONVERGED",
+    "SEMANTIC_EXTRACTION_PASS_CANDIDATE",
     "NOT_EXECUTED_BY_GRID_POLICY",
     "SOURCE_CLAMPED_INPUT_REJECTED",
     "SOURCE_EXECUTION_ERROR",
     "SOURCE_NONCONVERGED",
     "PARSER_FAIL",
-    "EVIDENCE_PACKAGING_FAIL"
+    "SEMANTIC_PARSER_FAIL",
+    "EVIDENCE_PACKAGING_FAIL",
+    "NOT_EVALUATED",
+    "NOT_EVALUATED_SOURCE_INPUT_REJECTED",
+    "NOT_EVALUATED_NATIVE_OUT_SS_MISSING",
+    "NOT_EVALUATED_SCHEMA_INVENTORY_FAIL",
+    "NOT_EVALUATED_SOURCE_NONCONVERGED",
+    "NOT_EVALUATED_SOURCE_EXECUTION_ERROR"
   ],
   "run_statuses": [
-    "P1_COMPAT_NATIVE_SOURCE_CANDIDATE_PASS_SCHEMA_DISCOVERY",
+    "P1_NATIVE_GENERIC_SOURCE_REFERENCE_CANDIDATE_PASS_SEMANTIC_DECK",
     "UNREVIEWED_HARNESS_SHA_FAIL",
     "HARNESS_IDENTITY_FAIL",
     "RUNNER_IDENTITY_FAIL",
@@ -27,6 +35,8 @@
     "SOURCE_NONCONVERGED",
     "SOURCE_CLAMPED_INPUT_REJECTED",
     "PARSER_FAIL",
+    "SEMANTIC_PARSER_FAIL",
+    "SEMANTIC_WARNING_REVIEW_FAIL",
     "EVIDENCE_PACKAGING_FAIL",
     "OTHER_TOOLING_FAIL"
   ],
@@ -34,5 +44,9 @@
   "source_nonconvergence_rule": "SOURCE_NONCONVERGED is permitted only for a point that actually executed native AGTF30/T-MATS, produced native out_SS, and has explicit out_SS.converged evidence indicating nonconvergence.",
   "matlab_action_failure_rule": "Licensing, MATLAB startup, action runtime, and undifferentiated step failure are tooling/action failures. If available metadata does not prove timeout or a more specific source/build class, use MATLAB_ACTION_EXECUTION_FAIL.",
   "timeout_rule": "NATIVE_STEP_TIMEOUT_TOOLING_FAIL is permitted only when GitHub/action metadata explicitly establishes a timeout. A generic failed run-command outcome is not sufficient to fabricate timeout certainty.",
-  "note": "A P1-COMPAT candidate pass is not final P1 semantic-deck acceptance. First controlled run remains schema discovery plus native execution qualification."
+  "note": "A semantic-deck candidate pass is not final P1 semantic-deck acceptance. Downstream Oversight must review the controlled artifact before semantic P1 authority is accepted.",
+  "semantic_parser_failure_rule": "SEMANTIC_PARSER_FAIL is carried by Semantic_Status after a converged native point fails reviewed semantic extraction. The same point retains Run_Status=PASS_NATIVE_CONVERGED and Native_Converged=1; raw MAT remains authoritative.",
+  "semantic_warning_review_rule": "SEMANTIC_WARNING_REVIEW_FAIL is used when current-run machine-readable diary review finds an uncontextualized reviewed warning occurrence, the warning at an unexpected point, or warning-count growth beyond the reviewed Run #3 baseline. Zero warning occurrences are permitted.",
+  "semantic_point_status_rule": "Semantic_Status uses SEMANTIC_EXTRACTION_PASS_CANDIDATE, SEMANTIC_PARSER_FAIL, NOT_EXECUTED_BY_GRID_POLICY, or an explicit NOT_EVALUATED_* reason. Semantic success remains candidate-only.",
+  "native_semantic_status_separation_rule": "native_reference_execution_summary.csv preserves native execution status. semantic_reference_execution_summary.csv carries semantic extraction status. Semantic failure must not overwrite a valid native PASS status."
 }
