@@ -69,6 +69,37 @@ if 'MATLAB_ACTION_EXECUTION_FAIL' not in finalizer: print('MATLAB ACTION FAILURE
 if 'PWSH_SYNTAX_OUTCOME' not in finalizer or 'source_dependency_assessment.json' not in finalizer or 'CANTERA_REQUIRED' not in finalizer: print('PREFLIGHT FAILURE CLASSIFICATION FAIL'); sys.exit(6)
 status_codes=json.loads((root/'config/status_codes.json').read_text(encoding='utf-8'))
 if 'source_dependency_failure_rule' not in status_codes: print('SOURCE DEPENDENCY STATUS SEMANTICS FAIL'); sys.exit(6)
+
+toolchain=json.loads((root/'config/toolchain_policy.json').read_text(encoding='utf-8'))
+expected_compiler=toolchain.get('expected_c_mex_compiler',{})
+if toolchain.get('schema')!='NREF_P1_COMPAT_TOOLCHAIN_POLICY_v1.1': print('TOOLCHAIN POLICY SCHEMA FAIL'); sys.exit(6)
+if expected_compiler.get('semantic_identity_fields')!=['Name','Manufacturer','Language','Version','Location']: print('COMPILER SEMANTIC IDENTITY POLICY FAIL'); sys.exit(6)
+if expected_compiler.get('configuration_descriptor_fields')!=['ShortName']: print('COMPILER CONFIGURATION DESCRIPTOR POLICY FAIL'); sys.exit(6)
+if expected_compiler.get('configuration_provenance_fields')!=['MexOpt']: print('COMPILER PROVENANCE POLICY FAIL'); sys.exit(6)
+if expected_compiler.get('mexopt_policy')!='RECORD_PATH_EXISTENCE_AND_SIZE_FOR_PROVENANCE_DO_NOT_USE_AS_COMPILER_IDENTITY': print('MEXOPT SEMANTICS FAIL'); sys.exit(6)
+if expected_compiler.get('preselected_match_action')!='ACCEPT_WITHOUT_MEX_SETUP': print('PRESELECTED COMPILER POLICY FAIL'); sys.exit(6)
+if expected_compiler.get('recovery_selection_action')!='MEX_SETUP_C_IF_SELECTED_MISSING_OR_SEMANTIC_MISMATCH': print('COMPILER RECOVERY POLICY FAIL'); sys.exit(6)
+
+selector=(root/'scripts/nref_select_compiler.m').read_text(encoding='utf-8')
+required_selector_markers=[
+    'compiler_selection_assessment.json',
+    'NREF_C_MEX_COMPILER_SELECTION_ASSESSMENT_v1.0',
+    'NREF_DETERMINISTIC_C_MEX_COMPILER_SELECTION_v1.2',
+    "assessment.selection_action='PRESELECTED_ACCEPTED'",
+    "assessment.selection_action='MEX_SETUP_C_RECOVERY_ATTEMPTED'",
+    "assessment.selection_action='MEX_SETUP_C_SELECTED'",
+    'cmp.ShortName_equal_descriptor=',
+    'cmp.MexOpt_equal_provenance=',
+    'cmp.overall=cmp.Name && cmp.Manufacturer && cmp.Language &&',
+]
+if any(marker not in selector for marker in required_selector_markers): print('COMPILER SELECTOR IMPLEMENTATION FAIL'); sys.exit(6)
+if len(re.findall(r'(?m)^\s*mex -setup C\s*$',selector))!=1: print('COMPILER MEX SETUP RECOVERY PATH FAIL'); sys.exit(6)
+overall_match=re.search(r'cmp\.overall=(.*?);',selector,re.S)
+if not overall_match: print('COMPILER OVERALL IDENTITY EXPRESSION FAIL'); sys.exit(6)
+overall_expr=overall_match.group(1)
+if 'MexOpt' in overall_expr or 'ShortName' in overall_expr: print('CONFIGURATION FIELD HARD IDENTITY REGRESSION FAIL'); sys.exit(6)
+if re.search(r'(?i)mex\s+-f\s+',selector): print('DIRECT MEX OPTIONS OVERRIDE FAIL'); sys.exit(6)
+
 gate=(root/'scripts/capture_harness_identity.ps1').read_text(encoding='utf-8')
 if '^[0-9a-fA-F]{40}$' not in gate or 'UNREVIEWED_HARNESS_SHA_FAIL' not in gate: print('HARNESS SHA IMPLEMENTATION FAIL'); sys.exit(6)
 

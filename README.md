@@ -56,7 +56,7 @@ Repository visibility is part of the tooling basis. Changing the repository to p
 
 ## Compiler policy
 
-The controlled R2023b run requires the Microsoft Visual C++ 2022 / Visual Studio 2022 Build Tools C MEX family. The workflow enumerates installed MATLAB compiler configurations and requires exactly one supported C configuration. That sole C configuration must be Microsoft Visual C++ 2022; the harness then uses the documented `mex -setup C` path and verifies the selected identity. Ambiguous or unexpected compiler environments fail rather than silently falling back.
+The controlled R2023b run requires the Microsoft Visual C++ 2022 / Visual Studio 2022 Build Tools C MEX family. The workflow enumerates installed MATLAB compiler configurations and requires exactly one supported C configuration. That sole C configuration must be Microsoft Visual C++ 2022. The harness first inspects the currently selected C configuration and accepts it without changing compiler state when it matches the sole candidate by semantic compiler identity. The documented `mex -setup C` path is used only as a recovery selection path when the selected C configuration is missing or semantically mismatched. Ambiguous or unexpected compiler environments fail rather than silently falling back. `ShortName` and `MexOpt` are retained as configuration descriptor/provenance evidence and are not hard compiler-identity fields.
 
 ## Dependency / Cantera policy
 
