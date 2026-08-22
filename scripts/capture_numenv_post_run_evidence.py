@@ -28,12 +28,35 @@ for rel in copy_paths:
     src = root / rel
     if not src.exists():
         raise SystemExit('HARNESS_EVIDENCE_SOURCE_MISSING ' + rel)
-    dst = harness / rel.replace('/', '__')
+    flat = rel.replace('/', '__')
+    # upload-artifact defaults to include-hidden-files=false.  Never create a
+    # flattened evidence filename beginning with '.', otherwise the internal
+    # SHA256 manifest would reference a file omitted from the uploaded artifact.
+    if flat.startswith('.'):
+        flat = 'dot__' + flat[1:]
+    dst = harness / flat
     shutil.copy2(src, dst)
 
 manifest = evidence / 'SHA256SUMS.txt'
-if manifest.exists():
-    manifest.unlink()
+count_file = evidence / 'EVIDENCE_FILE_COUNT.txt'
+for generated in (manifest, count_file):
+    if generated.exists():
+        generated.unlink()
+
+# Fail closed if any evidence path component is hidden.  The controlled
+# upload intentionally keeps include-hidden-files at its default false value.
+# Therefore package completeness requires every manifest-referenced evidence
+# object to be upload-visible.
+for path in evidence.rglob('*'):
+    rel_parts = path.relative_to(evidence).parts
+    if any(part.startswith('.') for part in rel_parts):
+        raise SystemExit('HIDDEN_EVIDENCE_PATH_FAIL ' + path.relative_to(evidence).as_posix())
+
+# The count file is itself evidence and must be covered by SHA256SUMS.  Define
+# its value as the number of non-manifest evidence files, including itself.
+pre_count_files = sorted(p for p in evidence.rglob('*') if p.is_file())
+expected_record_count = len(pre_count_files) + 1
+count_file.write_text(str(expected_record_count) + '\n', encoding='ascii')
 
 rows = []
 for path in sorted(p for p in evidence.rglob('*') if p.is_file() and p != manifest):
@@ -43,9 +66,25 @@ for path in sorted(p for p in evidence.rglob('*') if p.is_file() and p != manife
             h.update(chunk)
     rows.append(f'{h.hexdigest()}  {path.relative_to(evidence).as_posix()}')
 
+if len(rows) != expected_record_count:
+    raise SystemExit(
+        f'EVIDENCE_FILE_COUNT_FAIL expected={expected_record_count} actual={len(rows)}'
+    )
 manifest.write_text('\n'.join(rows) + '\n', encoding='ascii')
 
-# Self-check the manifest just generated.
+# Self-check the manifest just generated and require exact coverage of every
+# non-manifest evidence object.
+manifest_rel = {line.split('  ', 1)[1] for line in manifest.read_text(encoding='ascii').splitlines()}
+actual_rel = {
+    path.relative_to(evidence).as_posix()
+    for path in evidence.rglob('*')
+    if path.is_file() and path != manifest
+}
+if manifest_rel != actual_rel:
+    missing = sorted(actual_rel - manifest_rel)
+    extra = sorted(manifest_rel - actual_rel)
+    raise SystemExit(f'EVIDENCE_MANIFEST_COVERAGE_FAIL missing={missing} extra={extra}')
+
 for line in manifest.read_text(encoding='ascii').splitlines():
     expected, rel = line.split('  ', 1)
     path = evidence / rel
@@ -57,7 +96,4 @@ for line in manifest.read_text(encoding='ascii').splitlines():
     if actual != expected:
         raise SystemExit('EVIDENCE_MANIFEST_SELF_CHECK_FAIL ' + rel)
 
-(evidence / 'EVIDENCE_FILE_COUNT.txt').write_text(
-    str(len(rows)) + '\n', encoding='ascii'
-)
 print('GENERIC_NUMENV_EVIDENCE_MANIFEST=PASS files=' + str(len(rows)))
