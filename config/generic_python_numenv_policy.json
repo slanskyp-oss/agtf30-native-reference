@@ -1,0 +1,60 @@
+{
+  "schema": "NREF_GENERIC_PYTHON_NUMENV_POLICY_v1.0",
+  "classification": "GENERIC_PUBLIC_NUMERICAL_ENVIRONMENT_PROVENANCE_ONLY",
+  "information_firewall": {
+    "direction": "public generic toolchain evidence -> offline/private downstream assessment",
+    "downstream_project_inputs_allowed": false,
+    "downstream_project_secrets_allowed": false,
+    "downstream_requirement_mission_registry_decision_data_allowed": false,
+    "authority": "Artifacts are generic environment evidence only and acquire downstream authority only after separate private ingestion/review."
+  },
+  "controlled_trigger": {
+    "event": "workflow_dispatch_only",
+    "authorization_token": "AUTHORIZE_CONTROLLED_NUMENV",
+    "reviewed_harness_sha_required": true
+  },
+  "runner": {
+    "label": "ubuntu-24.04",
+    "required_os": "Linux",
+    "required_arch": "X64"
+  },
+  "image": {
+    "repository": "docker.io/library/python",
+    "frozen_registry_digest": "sha256:67a1e1f215ccda113cfc024e8639049257e88f273898f595b61476d128d387e8",
+    "immutable_reference": "docker.io/library/python@sha256:67a1e1f215ccda113cfc024e8639049257e88f273898f595b61476d128d387e8",
+    "target_platform": "linux/amd64",
+    "python_version": "3.13.14"
+  },
+  "packages": {
+    "pip": "26.1.2",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "pytest": "9.1.1",
+    "iniconfig": "2.3.0",
+    "packaging": "26.3",
+    "pluggy": "1.6.0",
+    "Pygments": "2.21.0"
+  },
+  "threading_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1"
+  },
+  "qualification_install": {
+    "docker_network": "none",
+    "docker_pull_policy_during_install": "never",
+    "pip_no_index": true,
+    "require_hashes": true,
+    "only_binary": true,
+    "wheelhouse_rehash_before_any_install": true,
+    "pip_bootstrap_explicit_rehash_before_consumption": true
+  },
+  "prohibited_execution": [
+    "No propulsion/vehicle/model calculation is executed by this workflow.",
+    "No public NASA source model is executed by this workflow.",
+    "No downstream private requirement, mission, audit, registry, decision or design data is accepted by this workflow."
+  ]
+}

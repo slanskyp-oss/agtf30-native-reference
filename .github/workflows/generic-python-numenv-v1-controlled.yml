@@ -1,0 +1,179 @@
+name: Controlled Generic Python Numerical Environment v1.0 acquisition
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorization:
+        description: 'Manual authorization token'
+        required: true
+        type: choice
+        options:
+          - AUTHORIZE_CONTROLLED_NUMENV
+      expected_harness_sha:
+        description: 'Reviewed 40-hex Git commit SHA for this exact public harness'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RUN_REASON: CONTROLLED_GENERIC_PYTHON_NUMERICAL_ENVIRONMENT_ACQUISITION
+  NUMENV_CLASSIFICATION: GENERIC PUBLIC TOOLCHAIN / NUMERICAL ENVIRONMENT EVIDENCE CANDIDATE
+  EXPECTED_HARNESS_SHA: ${{ inputs.expected_harness_sha }}
+
+jobs:
+  controlled-generic-python-numenv:
+    if: ${{ inputs.authorization == 'AUTHORIZE_CONTROLLED_NUMENV' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout reviewed execution harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Initialize evidence directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/harness evidence/environment evidence/wheelhouse evidence/oci evidence/install evidence/status transport
+
+      - name: Enforce reviewed harness SHA binding
+        id: harness_identity
+        continue-on-error: true
+        shell: pwsh
+        run: ./scripts/capture_harness_identity.ps1
+
+      - name: Capture Linux runner and Docker identity
+        id: runner_identity
+        if: ${{ steps.harness_identity.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: python3 scripts/capture_numenv_runner_identity.py
+
+      - name: Verify public allowlist and existing repository controls
+        id: public_allowlist
+        if: ${{ steps.harness_identity.outcome == 'success' && steps.runner_identity.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: python3 tools/public_allowlist_check.py
+
+      - name: Verify generic numerical-environment harness semantics and syntax
+        id: numenv_static
+        if: ${{ steps.public_allowlist.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/fetch_numenv_wheelhouse.sh
+          bash -n scripts/materialize_numenv_oci.sh
+          bash -n scripts/run_numenv_offline_install.sh
+          python3 - <<'PY'
+          from pathlib import Path
+          files = [
+              'scripts/capture_numenv_runner_identity.py',
+              'scripts/finalize_numenv_status.py',
+              'scripts/capture_numenv_post_run_evidence.py',
+              'scripts/record_numenv_transport_digest.py',
+              'scripts/enforce_numenv_gate.py',
+              'scripts/verify_numenv_environment.py',
+              'tools/generic_numenv_static_check.py',
+          ]
+          for rel in files:
+              src = Path(rel).read_text(encoding='utf-8')
+              compile(src, rel, 'exec')
+          print('PYTHON_SYNTAX_PASS files=' + str(len(files)))
+          PY
+          python3 tools/generic_numenv_static_check.py
+
+      - name: Acquire exact hash-bound wheelhouse
+        id: wheelhouse
+        if: ${{ steps.numenv_static.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: bash scripts/fetch_numenv_wheelhouse.sh
+
+      - name: Materialize immutable Linux amd64 qualification image
+        id: oci
+        if: ${{ steps.wheelhouse.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: bash scripts/materialize_numenv_oci.sh
+
+      - name: Execute network-disabled hash-locked installation and environment verification
+        id: offline_install
+        if: ${{ steps.oci.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: bash scripts/run_numenv_offline_install.sh
+
+      - name: Finalize machine-readable generic environment status
+        id: finalize_status
+        if: always()
+        continue-on-error: true
+        shell: bash
+        env:
+          HARNESS_IDENTITY_OUTCOME: ${{ steps.harness_identity.outcome }}
+          RUNNER_IDENTITY_OUTCOME: ${{ steps.runner_identity.outcome }}
+          PUBLIC_ALLOWLIST_OUTCOME: ${{ steps.public_allowlist.outcome }}
+          NUMENV_STATIC_OUTCOME: ${{ steps.numenv_static.outcome }}
+          WHEELHOUSE_OUTCOME: ${{ steps.wheelhouse.outcome }}
+          OCI_OUTCOME: ${{ steps.oci.outcome }}
+          OFFLINE_INSTALL_OUTCOME: ${{ steps.offline_install.outcome }}
+        run: python3 scripts/finalize_numenv_status.py
+
+      - name: Capture post-run evidence and SHA256 manifest
+        id: package_evidence
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: python3 scripts/capture_numenv_post_run_evidence.py
+
+      - name: Upload controlled generic environment evidence artifact
+        id: upload_evidence
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1, node24
+        with:
+          name: GENERIC_PYTHON_NUMENV_V1_CONTROLLED_EVIDENCE
+          path: evidence
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Record CI transport digest and run binding
+        id: record_transport
+        if: ${{ always() && steps.upload_evidence.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          PRIMARY_ARTIFACT_DIGEST: ${{ steps.upload_evidence.outputs.artifact-digest }}
+          PRIMARY_ARTIFACT_ID: ${{ steps.upload_evidence.outputs.artifact-id }}
+          PRIMARY_ARTIFACT_URL: ${{ steps.upload_evidence.outputs.artifact-url }}
+        run: python3 scripts/record_numenv_transport_digest.py
+
+      - name: Upload transport record
+        id: upload_transport
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1, node24
+        with:
+          name: GENERIC_PYTHON_NUMENV_V1_TRANSPORT_RECORD
+          path: transport
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce aggregate controlled generic-environment result
+        if: always()
+        shell: bash
+        env:
+          FINALIZE_STATUS_OUTCOME: ${{ steps.finalize_status.outcome }}
+          PACKAGE_EVIDENCE_OUTCOME: ${{ steps.package_evidence.outcome }}
+          UPLOAD_EVIDENCE_OUTCOME: ${{ steps.upload_evidence.outcome }}
+          RECORD_TRANSPORT_OUTCOME: ${{ steps.record_transport.outcome }}
+          UPLOAD_TRANSPORT_OUTCOME: ${{ steps.upload_transport.outcome }}
+        run: python3 scripts/enforce_numenv_gate.py
